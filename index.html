@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<title>Messaging App Test</title>
+	</head>
+	<body>
+		<script src="https://cdn.pubnub.com/pubnub-3.7.23.min.js"></script>
+		<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+		
+		<div>
+			<h1>Messaging App Test - Listening to Server</h1>
+			<p id="output">Output Log:</p>
+		</div>
+		
+	</body>
+	
+	<script>
+	var global_chan = "itp_test_channel_nodejs";
+	var private_chan = "";
+	var client_uuid = PUBNUB.uuid();
+	
+	var pubnub = PUBNUB({
+		subscribe_key: 'sub-c-a91c35f6-ca98-11e5-a9b2-02ee2ddab7fe', // always required
+		publish_key: 'pub-c-0932089b-8fc7-4329-b03d-7c47fe828971',    // only required if publishing
+		uuid: client_uuid,
+		heartbeat : 30,
+		ssl : true
+	});
+	
+	console.log("Your UUID: " + client_uuid);
+	write("Your UUID: " + client_uuid);
+	
+	/* Handle messages from the GLOBAL CHANNEL */
+	pubnub.subscribe({
+		channel: global_chan,
+		message: function(m)
+		{
+			console.log("Received message: " + JSON.stringify(m));
+			write("Received message: " + JSON.stringify(m));
+			if(m.m_type === "i_connect" && m.uuid === client_uuid)
+			{
+				private_chan = m.channel;
+				
+				/* Handle messages from the PRIVATE CHANNEL */
+				pubnub.subscribe({
+					channel: private_chan,
+					callback: function()
+					{
+						console.log("Connected to: " + private_chan);
+						write("Connected to: " + private_chan);
+					},
+					connect: function(m)
+					{
+						console.log("Connected to: " + private_chan)
+						write("Connected to: " + private_chan);
+					}
+				});
+			}
+		}
+	});
+	
+	/* DEBUG LOG FUNCTION */
+	function write(msg){
+		$("#output").append("<br/> > " + msg);
+	}
+	</script>
+</html>
