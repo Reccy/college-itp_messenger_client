@@ -1,4 +1,4 @@
-<html style="color: green; background-color: black; font-family:'Courier', serif;"> <!-- Temporary styling because bad style is better than no style! :D -->
+<html style="color: white; background-color: black; font-family:'Courier', serif;"> <!-- Temporary styling because bad style is better than no style! :D -->
 	<head>
 		<title>Messaging App Test</title>
 	</head>
@@ -35,8 +35,8 @@
 	function initialize_app()
 	{
 		appInitialized = false;
-		console.log("<==========[INITIALIZING APP]==========>");
-		write("<==========[INITIALIZING APP]==========>");
+		console.log("<br/> > <==========[INITIALIZING APP]==========>");
+		write("<br/> > <==========[INITIALIZING APP]==========>");
 		console.log("Connecting to GLOBAL CHANNEL");
 		write("Connecting to GLOBAL CHANNEL");
 		
@@ -59,15 +59,21 @@
 				{
 					console.log("SERVER offline! Please try again later!");
 					write("SERVER offline! Please try again later!");
+					pubnub.unsubscribe({
+						channel: private_chan
+					});
 				}
+				connect_to_global();
 			}
 		});	
 		
-		pubnub.subscribe({
+		function connect_to_global()
+		{
+			pubnub.subscribe({
 			channel: global_chan,
 			callback: function(m){
-				console.log("Received message: " + JSON.stringify(m));
-				write("Received message: " + JSON.stringify(m));
+				//console.log("Received message: " + JSON.stringify(m));
+				//write("Received message: " + JSON.stringify(m));
 				if(m.m_type === "i_connect" && m.uuid === client_uuid)
 				{
 					if(!serverOnline)
@@ -83,19 +89,29 @@
 						channel: private_chan,
 						callback: function(m)
 						{
-							write(JSON.stringify(m));
+							if(m.m_type === "server_shutdown")
+							{
+								serverOnline = false;
+								appInitialized = false;
+								console.log("SERVER shutdown message received");
+								write("SERVER shutdown message received");
+								pubnub.unsubscribe({
+									channel: private_chan
+								});
+								initialize_app();
+							}
 						},
 						connect: function()
 						{
 							console.log("Connected to: " + private_chan);
 							write("Connected to: " + private_chan);
-							setTimeout(verify_server_connection(), 10 * 1000);
+							setTimeout(function() {verify_server_connection()}, 5000);
 						},
 						presence: function(m)
 						{
-							console.log("Presence event: " + JSON.stringify(m));
-							write("Presence event: " + JSON.stringify(m));
-							if(m.uuid === "SERVER" && m.action === "join")
+							//console.log("Presence event: " + JSON.stringify(m));
+							//write("Presence event: " + JSON.stringify(m));
+							if(m.uuid === "SERVER" && m.action === "join" && !appInitialized)
 							{
 								pubnub.unsubscribe({
 									channel: global_chan,
@@ -103,6 +119,8 @@
 									{
 										write("Disconnected from GLOBAL CHANNEL!");
 										write("App Initialized!");
+										console.log("Disconnected from GLOBAL CHANNEL!");
+										console.log("App Initialized!");
 										appInitialized = true;
 									}
 								});
@@ -115,12 +133,27 @@
 								pubnub.unsubscribe({
 									channel: private_chan
 								});
-								console.log("<==========[RESTARTING APP]==========>");
-								write("<==========[RESTARTING APP]==========><br/>");
 								initialize_app();
 							}
 						}
 					});
+				}
+				else if(m.m_type === "server_shutdown")
+				{
+					if(m.m_type === "server_shutdown")
+					{
+						serverOnline = false;
+						appInitialized = false;
+						console.log("SERVER shutdown message received");
+						write("SERVER shutdown message received");
+						pubnub.unsubscribe({
+							channel: private_chan,
+							callback: function(m)
+							{
+								initialize_app();
+							}
+						});
+					}
 				}
 			},
 			presence: function(m)
@@ -131,19 +164,58 @@
 					console.log("SERVER offline! Please try again later!");
 					write("SERVER offline! Please try again later!");
 					serverOnline = false;
+					pubnub.unsubscribe({
+						channel: private_chan
+					});
 				}
 			}
 		});
+		}
+		
 		
 		//Verify that the client has connected with the server on the private channel
 		function verify_server_connection()
 		{
 			if(appInitialized === false)
 			{
-				console.log("SERVER offline! Please try again later!");
-				write("SERVER offline! Please try again later!");
-				serverOnline = false;
-				private_chan = "";
+				pubnub.here_now({
+					channel: private_chan,
+					callback: function(m)
+					{
+						for(i = 0; i < m.uuids.length; i++)
+						{
+							if(m.uuids[i] === "SERVER")
+							{
+								appInitialized = true;
+							}
+						}
+						
+						if(appInitialized === false)
+						{
+							console.log("SERVER offline! Please try again later!");
+							write("SERVER offline! Please try again later!");
+							serverOnline = false;
+							private_chan = "";
+							pubnub.unsubscribe({
+								channel: private_chan
+							});
+						}
+						else
+						{
+							pubnub.unsubscribe({
+								channel: global_chan,
+								callback: function(m)
+								{
+									write("Disconnected from GLOBAL CHANNEL!");
+									write("App Initialized!");
+									console.log("Disconnected from GLOBAL CHANNEL!");
+									console.log("App Initialized!");
+									appInitialized = true;
+								}
+							});
+						}
+					}
+				});
 			}
 		}
 	}
