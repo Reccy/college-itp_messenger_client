@@ -1,8 +1,10 @@
 var global_chan = "itp_test_channel_nodejs";
 var private_chan = "";
 var client_uuid = PUBNUB.uuid();
+var client_username = null;
 var serverOnline = false;
 var appInitialized = false;
+var loggedIn = false;
 var verifyTimeout;
 
 var pubnub = PUBNUB({
@@ -78,9 +80,11 @@ function initialize_app() {
                                     }
                                 });
                             }
-                            else if(m.m_type === "usr_reply") {
-                                write("REPLY FROM SERVER: " + m.contents);
-                                console.log("REPLY FROM SERVER: " + m.contents);
+                            else if(m.m_type === "usr_login_reply") {
+                                write("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
+                                console.log("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
+                                loggedIn = true;
+                                client_username = m.username;
                             }
                         },
                         connect: function() {
@@ -203,11 +207,11 @@ $("#btn_send").click(function(){
         write("ERROR! Can't send message: App not yet initialized!");
         console.log("ERROR! Can't send message: App not yet initialized!");
     }
-    else
+    else if(!loggedIn)
     {
         
         msg = {
-            "m_type": "usr_test",
+            "m_type": "usr_login",
             "uuid": client_uuid,
             "contents": $("#in_test").val()
         };
