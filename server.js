@@ -4,6 +4,8 @@ var client_uuid = PUBNUB.uuid();
 var client_username = null;
 var serverOnline = false;
 var appInitialized = false;
+var tempChatStarted = false;
+var tempChannel;
 var loggedIn = false;
 var verifyTimeout;
 
@@ -68,6 +70,8 @@ function initialize_app() {
                     pubnub.subscribe({
                         channel: private_chan,
                         callback: function(m) {
+                            write("TYPE: " + m.m_type);
+                            
                             if (m.m_type === "server_shutdown") {
                                 serverOnline = false;
                                 appInitialized = false;
@@ -85,6 +89,25 @@ function initialize_app() {
                                 console.log("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
                                 loggedIn = true;
                                 client_username = m.username;
+                            }
+                            else if(m.m_type === "chat_init") {
+                                write("INITIATING CHAT!");
+                                console.log("INITIATING CHAT!");
+                                pubnub.subscribe({
+                                    channel: m.channel,
+                                    connect: function() {
+                                        write("CHAT CONNECTED");
+                                        console.log("CHAT CONNECTED");
+                                        tempChatStarted = true;
+                                        tempChannel = m.channel;
+                                    },
+                                    callback: function(m) {
+                                        if(m.m_type === "chat_message") {
+                                            write(m.sender + ": " + m.contents);
+                                            console.log(m.sender + ": " + m.contents);
+                                        }
+                                    }
+                                })
                             }
                         },
                         connect: function() {
@@ -232,5 +255,65 @@ $("#btn_send").click(function(){
                 }
             }
         });
+    }
+    else if(!tempChatStarted)
+    {
+        write("STARTING CHAT WITH: " + $("#in_test").val());
+        console.log("STARTING CHAT WITH: " + $("#in_test").val());
+        
+        msg = {
+            "m_type": "chat_start",
+            "sender": client_username,
+            "receiver": $("#in_test").val()
+        }
+        
+        pubnub.publish({
+            channel: private_chan,
+            message: msg,
+            callback: function(m){
+                if (m[0] == "1")
+                {
+                    write("MESSAGE SENT SUCCESSFULLY: " + m);
+                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                }
+                else
+                {
+                    write("MESSAGE SENT FAILED: " + m);
+                    console.log("MESSAGE SENT FAILED: " + m);
+                }
+            }
+        });
+    }
+    else
+    {
+        msg = {
+            "m_type": "chat_message",
+            "sender": client_username,
+            "contents": $("#in_test").val()
+        }
+        
+        /*
+        write("SENDING MESSAGE TO CHANNEL: " + tempChannel);
+        console.log("SENDING MESSAGE TO CHANNEL: " + tempChannel);
+        */
+        
+        pubnub.publish({
+            channel: tempChannel,
+            message: msg,
+            callback: function(m){
+                /*
+                if (m[0] == "1")
+                {
+                    write("MESSAGE SENT SUCCESSFULLY: " + m);
+                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                }
+                else
+                {
+                    write("MESSAGE SENT FAILED: " + m);
+                    console.log("MESSAGE SENT FAILED: " + m);
+                }
+                */
+            }
+        })
     }
 });
