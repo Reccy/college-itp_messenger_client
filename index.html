@@ -1,22 +1,24 @@
-<html style="color: white; background-color: black; font-family:'Courier', serif;"> <!-- Temporary styling because bad style is better than no style! :D -->
+<html> <!-- Temporary styling because bad style is better than no style! :D -->
 	<head>
-		<title>Messaging App Test</title>
+		<title>Tinngle Messenger</title>
+
+		<!-- Bootstrap -->
+      	<link href="css/bootstrap.min.css" rel="stylesheet">
+      	<link href="css/customstyle.css" rel="stylesheet">
 	</head>
-	<body>
-		<script src="https://cdn.pubnub.com/pubnub-3.7.23.min.js"></script>
-		<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-		
-		<div>
-			<h1>Messaging App Test - Listening to Server</h1>
-			<p id="output">Output Log:</p>
-			<div>
-				<input type="text" id="in_test">
-				<button type="button" id="btn_send">SEND</button>
-			</div>
-			
-		</div>
-	</body>
 	
-	<script src="jquery-2.2.0.min.js"></script>
-	<script src="server.js"></script>
+	<body>
+	
+		<!-- Javascript plugins for client -->
+		<script src="js/pubnub-3.10.3.min.js"></script>
+		<script src="js/jquery-2.2.0.min.js"></script>
+		
+		<!-- Main HTML code -->
+		<h1>Hello World!</h1>
+		
+		<!-- Server connection code -->
+		<script src="js/server.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	
+	</body>
 </html>

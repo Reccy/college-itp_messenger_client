@@ -1,67 +1,88 @@
-var global_chan = "itp_test_channel_nodejs";
-var private_chan = "";
-var client_uuid = PUBNUB.uuid();
-var client_username = null;
-var serverOnline = false;
-var appInitialized = false;
-var tempChatStarted = false;
-var tempChannel;
-var loggedIn = false;
-var verifyTimeout;
+// Global variables
+var global_chan = "itp_test_channel_nodejs"; //Global channel name
+var private_chan = ""; //Private channel name
+var client_uuid = PUBNUB.uuid(); //Temporary UUID
+var client_username = null; //Client's username
+var serverOnline = false; //Boolean for the server's status
+var appInitialized = false; //Boolean for the app's init status
+var tempChatStarted = false; //Temp Boolean for the chat start
+var tempChannel; //Temp name of chat channel
+var loggedIn = false; //Bool to check if user is logged in
+var verifyTimeout; //Timeout to verify the server connection
 
+//PUBNUB object
 var pubnub = PUBNUB({
-    subscribe_key: 'sub-c-a91c35f6-ca98-11e5-a9b2-02ee2ddab7fe', // always required
-    publish_key: 'pub-c-0932089b-8fc7-4329-b03d-7c47fe828971', // only required if publishing
+    subscribe_key: 'sub-c-a91c35f6-ca98-11e5-a9b2-02ee2ddab7fe',
+    publish_key: 'pub-c-0932089b-8fc7-4329-b03d-7c47fe828971',
     uuid: client_uuid,
     heartbeat: 30,
     ssl: true
 });
 
+//Debug console log
 console.log("Your UUID: " + client_uuid);
-write("Your UUID: " + client_uuid);
 
-/* Handle messages from the GLOBAL CHANNEL */
+/* Initialize the app */
 function initialize_app() {
-    clearTimeout(verifyTimeout);
+    clearTimeout(verifyTimeout); //Clear the timeout verification
     appInitialized = false;
-    console.log("<br/> > <==========[INITIALIZING APP]==========>");
-    write("<br/> > <==========[INITIALIZING APP]==========>");
+    
+    //Debug Start
+    console.log("\n<==========[INITIALIZING APP]==========>");
     console.log("Connecting to GLOBAL CHANNEL");
-    write("Connecting to GLOBAL CHANNEL");
+    //Debug End
 
+    /* 
+        Check who is online on the global channel.
+        Set the "serverOnline" boolean depending on the SERVER's presence.
+    */
     pubnub.here_now({
         channel: global_chan,
         callback: function(m) {
-            serverOnline = false;
+            serverOnline = false; //Reset bool
+            
+            //Iterate through online UUIDs
             for (i = 0; i < m.uuids.length; i++) {
+                /* 
+                    If the UUID is the SERVER and the server bool is "Offline",
+                    set the server bool to true.
+                */
                 if ((m.uuids[i] === "SERVER") && !serverOnline) {
                     console.log("SERVER connected!");
-                    write("SERVER connected!");
                     serverOnline = true;
                     break;
                 }
             }
+            
+            /*
+                If the SERVER is offline, unsubscribe from the private channel
+            */
             if (!serverOnline) {
                 console.log("SERVER offline! Please try again later!");
-                write("SERVER offline! Please try again later!");
-                pubnub.unsubscribe({
-                    channel: private_chan
-                });
+                if(private_chan !== "")
+                {
+                    pubnub.unsubscribe({
+                        channel: private_chan,
+                    });        
+                }
             }
+            
+            //Connect to the global channel
             connect_to_global();
         }
     });
-
+    
+    /*
+        Connect to the global channel
+    */
     function connect_to_global() {
         pubnub.subscribe({
             channel: global_chan,
             callback: function(m) {
                 //console.log("Received message: " + JSON.stringify(m));
-                //write("Received message: " + JSON.stringify(m));
                 if (m.m_type === "i_connect" && m.uuid === client_uuid) {
                     if (!serverOnline) {
                         console.log("SERVER connected!");
-                        write("SERVER connected!");
                         serverOnline = true;
                     }
                     private_chan = m.channel;
@@ -70,13 +91,10 @@ function initialize_app() {
                     pubnub.subscribe({
                         channel: private_chan,
                         callback: function(m) {
-                            write("TYPE: " + m.m_type);
-                            
                             if (m.m_type === "server_shutdown") {
                                 serverOnline = false;
                                 appInitialized = false;
                                 console.log("SERVER shutdown message received");
-                                write("SERVER shutdown message received");
                                 pubnub.unsubscribe({
                                     channel: private_chan,
                                     callback: function() {
@@ -85,25 +103,21 @@ function initialize_app() {
                                 });
                             }
                             else if(m.m_type === "usr_login_reply") {
-                                write("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
                                 console.log("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
                                 loggedIn = true;
                                 client_username = m.username;
                             }
                             else if(m.m_type === "chat_init") {
-                                write("INITIATING CHAT!");
                                 console.log("INITIATING CHAT!");
                                 pubnub.subscribe({
                                     channel: m.channel,
                                     connect: function() {
-                                        write("CHAT CONNECTED");
                                         console.log("CHAT CONNECTED");
                                         tempChatStarted = true;
                                         tempChannel = m.channel;
                                     },
                                     callback: function(m) {
                                         if(m.m_type === "chat_message") {
-                                            write(m.sender + ": " + m.contents);
                                             console.log(m.sender + ": " + m.contents);
                                         }
                                     }
@@ -112,20 +126,16 @@ function initialize_app() {
                         },
                         connect: function() {
                             console.log("Connected to: " + private_chan);
-                            write("Connected to: " + private_chan);
                             verifyTimeout = setTimeout(function() {
                                 verify_server_connection()
                             }, 5000);
                         },
                         presence: function(m) {
                             //console.log("Presence event: " + JSON.stringify(m));
-                            //write("Presence event: " + JSON.stringify(m));
                             if (m.uuid === "SERVER" && m.action === "join" && !appInitialized) {
                                 pubnub.unsubscribe({
                                     channel: global_chan,
                                     callback: function(m) {
-                                        write("Disconnected from GLOBAL CHANNEL!");
-                                        write("App Initialized!");
                                         console.log("Disconnected from GLOBAL CHANNEL!");
                                         console.log("App Initialized!");
                                         appInitialized = true;
@@ -135,11 +145,12 @@ function initialize_app() {
 
                             if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                                 console.log("SERVER offline! Disconnecting from: " + private_chan);
-                                write("SERVER offline! Disconnecting from: " + private_chan);
                                 pubnub.unsubscribe({
-                                    channel: private_chan
+                                    channel: private_chan,
+                                    callback: function() {
+                                        initialize_app();        
+                                    }
                                 });
-                                initialize_app();
                             }
                         }
                     });
@@ -148,7 +159,6 @@ function initialize_app() {
                         serverOnline = false;
                         appInitialized = false;
                         console.log("SERVER shutdown message received");
-                        write("SERVER shutdown message received");
                         pubnub.unsubscribe({
                             channel: private_chan,
                             callback: function() {
@@ -162,43 +172,56 @@ function initialize_app() {
                 console.log(JSON.stringify(m));
                 if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                     console.log("SERVER offline! Please try again later!");
-                    write("SERVER offline! Please try again later!");
                     serverOnline = false;
                     pubnub.unsubscribe({
-                        channel: private_chan
+                        channel: private_chan,
+                        callback: function() {
+                            initialize_app();
+                        }
                     });
                 }
             }
         });
     }
 
-
-    //Verify that the client has connected with the server on the private channel
+    /*
+        Verify that the client has connected with the server on the private channel
+    */
     function verify_server_connection() {
+        //If the app is not initialized...
         if (appInitialized === false) {
+            
+            /*
+                Check who is online on the private channel,
+                if the SERVER is connected, the app is
+                initialized.
+            */
             pubnub.here_now({
                 channel: private_chan,
                 callback: function(m) {
+                    //Check for the SERVER
                     for (i = 0; i < m.uuids.length; i++) {
                         if (m.uuids[i] === "SERVER") {
                             appInitialized = true;
                         }
                     }
 
+                    //If the app is not initialized, then restart the app
                     if (appInitialized === false) {
                         console.log("SERVER offline! Please try again later!");
-                        write("SERVER offline! Please try again later!");
                         serverOnline = false;
                         private_chan = "";
                         pubnub.unsubscribe({
-                            channel: private_chan
+                            channel: private_chan,
+                            callback: function() {
+                                appInitialized();
+                            }
                         });
                     } else {
+                    //Otherwise disconnect from the global channel and finish initialization
                         pubnub.unsubscribe({
                             channel: global_chan,
                             callback: function(m) {
-                                write("Disconnected from GLOBAL CHANNEL!");
-                                write("App Initialized!");
                                 console.log("Disconnected from GLOBAL CHANNEL!");
                                 console.log("App Initialized!");
                                 appInitialized = true;
@@ -211,23 +234,17 @@ function initialize_app() {
     }
 }
 
-/* DEBUG LOG FUNCTION */
-function write(msg) {
-    $("#output").append("<br/> > " + msg);
-}
-
 //START OF SCRIPT
 initialize_app();
 
-$("#btn_send").click(function(){
+//TEMPORARY CODE FOR USER'S INPUT
+function sendMessage(data){
     if(!serverOnline)
     {
-        write("ERROR! Can not send message: Server offline!");
         console.log("ERROR! Can not send message: Server offline!");
     } 
     else if(!appInitialized)
     {
-        write("ERROR! Can't send message: App not yet initialized!");
         console.log("ERROR! Can't send message: App not yet initialized!");
     }
     else if(!loggedIn)
@@ -236,7 +253,7 @@ $("#btn_send").click(function(){
         msg = {
             "m_type": "usr_login",
             "uuid": client_uuid,
-            "contents": $("#in_test").val()
+            "contents": data
         };
         
         pubnub.publish({
@@ -245,12 +262,10 @@ $("#btn_send").click(function(){
             callback: function(m){
                 if (m[0] == "1")
                 {
-                    write("MESSAGE SENT SUCCESSFULLY: " + m);
                     console.log("MESSAGE SENT SUCCESSFULLY: " + m);
                 }
                 else
                 {
-                    write("MESSAGE SENT FAILED: " + m);
                     console.log("MESSAGE SENT FAILED: " + m);
                 }
             }
@@ -258,14 +273,13 @@ $("#btn_send").click(function(){
     }
     else if(!tempChatStarted)
     {
-        write("STARTING CHAT WITH: " + $("#in_test").val());
-        console.log("STARTING CHAT WITH: " + $("#in_test").val());
+        console.log("STARTING CHAT WITH: " + data);
         
         msg = {
             "m_type": "chat_start",
             "sender": client_username,
-            "receiver": $("#in_test").val()
-        }
+            "receiver": data
+            }
         
         pubnub.publish({
             channel: private_chan,
@@ -273,12 +287,10 @@ $("#btn_send").click(function(){
             callback: function(m){
                 if (m[0] == "1")
                 {
-                    write("MESSAGE SENT SUCCESSFULLY: " + m);
                     console.log("MESSAGE SENT SUCCESSFULLY: " + m);
                 }
                 else
                 {
-                    write("MESSAGE SENT FAILED: " + m);
                     console.log("MESSAGE SENT FAILED: " + m);
                 }
             }
@@ -289,31 +301,22 @@ $("#btn_send").click(function(){
         msg = {
             "m_type": "chat_message",
             "sender": client_username,
-            "contents": $("#in_test").val()
+            "contents": data
         }
-        
-        /*
-        write("SENDING MESSAGE TO CHANNEL: " + tempChannel);
-        console.log("SENDING MESSAGE TO CHANNEL: " + tempChannel);
-        */
         
         pubnub.publish({
             channel: tempChannel,
             message: msg,
             callback: function(m){
-                /*
                 if (m[0] == "1")
                 {
-                    write("MESSAGE SENT SUCCESSFULLY: " + m);
                     console.log("MESSAGE SENT SUCCESSFULLY: " + m);
                 }
                 else
                 {
-                    write("MESSAGE SENT FAILED: " + m);
                     console.log("MESSAGE SENT FAILED: " + m);
                 }
-                */
             }
         })
     }
-});
+};
