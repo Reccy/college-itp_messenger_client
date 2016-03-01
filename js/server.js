@@ -169,7 +169,7 @@ function initialize_app() {
                 }
             },
             presence: function(m) {
-                console.log(JSON.stringify(m));
+                //console.log(JSON.stringify(m));
                 if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                     console.log("SERVER offline! Please try again later!");
                     serverOnline = false;
