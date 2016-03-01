@@ -1,22 +1,97 @@
 <html> <!-- Temporary styling because bad style is better than no style! :D -->
 	<head>
+		<meta charset="utf-8">
 		<title>Tinglr Messenger</title>
 
-		<!-- Bootstrap -->
-      	<link href="css/bootstrap.min.css" rel="stylesheet">
-      	<link href="css/customstyle.css" rel="stylesheet">
-	</head>
-	
-	<body>
-		<!-- Main HTML code -->
-		<h1>Hello World!</h1>
-		
-		
-		
+		<link rel="stylesheet" href="bower_components/OnsenUI/css/onsenui.css"/>
+	    <link rel="stylesheet" href="bower_components/OnsenUI/css/onsen-css-components.css"/>
+	    <script src="bower_components/angular/angular.js"></script>
+	    <script src="bower_components/OnsenUI/js/onsenui.js"></script>
+
 		<!-- Javascript plugins for client -->
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
 		<script src="js/server.js"></script>
-		<script src="js/bootstrap.min.js"></script>
+
+	    <script>
+	      var module = ons.bootstrap('my-app', ['onsen']);
+	      module.controller('AppController', function($scope) { });
+	      module.controller('PageController', function($scope) {
+	        ons.ready(function() {
+	        	
+	        });
+	      });
+	    </script>
+	</head>
+	
+	<body ng-controller="AppController">
+		
+		<!-- App Structure Code Start -->
+	    <ons-navigator title="Navigator" var="myNavigator">
+		  <ons-page>
+		    <div style="text-align: center">
+		      <br>
+		      <br>
+		      <br>
+		      <br>
+		      <br>
+		      <br>
+		      <h1>Tinglr</h1>
+		      <br>
+		      <br>
+		      <ons-button modifier="cta" onclick="myNavigator.pushPage('login.html', { animation : 'slide' } )">
+		        Login
+		      </ons-button>
+		      <br>
+		      <br>
+		      <ons-button modifier="cta" onclick="myNavigator.pushPage('register.html', { animation : 'slide' } )">
+		        Register
+		      </ons-button>
+		      <br>
+		      <br>
+		      <ons-button modifier="cta" onclick="myNavigator.pushPage('repeat.html', { animation : 'slide' } )">
+		        Repeat
+		      </ons-button>
+		    </div>
+		  </ons-page>
+		</ons-navigator>
+		
+		<ons-template id="repeat.html">
+		  <ons-page style="text-align: center;">
+		  	<div style="text-align:center;">
+		  		<h2>Repeat</h2>
+				<ons-button modifier="cta" onclick="myNavigator.pushPage('repeat.html', { animation : 'slide' } )">
+					Next
+				</ons-button>
+				<ons-back-button>
+					Return
+				</ons-back-button>
+		  	</div>
+		  </ons-page>
+		</ons-template>
+		
+		<ons-template id="login.html">
+		  <ons-page style="text-align: center;">
+		  	<div style="text-align:center;">
+		  		<h2>Login</h2>
+				<ons-button modifier="cta" onclick="myNavigator.popPage()">
+					Back
+				</ons-button>
+		  	</div>
+		  </ons-page>
+		</ons-template>
+		
+		<ons-template id="register.html">
+		  <ons-page>
+		  	<div style="text-align:center;">
+		  		<h2>Register</h2>
+			    <ons-back-button>
+					Back
+				</ons-button>
+		  	</div>
+		  </ons-page>
+		</ons-template>
+		
+		<!-- App Structure Code End -->
 	</body>
 </html>
