@@ -13,15 +13,6 @@
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
 		<script src="js/server.js"></script>
-		
-		<!--Text plugin -->
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-     	<script src="js/script.js"></script>
-	    <script type="text/javascript">
-		$("#fittext1").fitText();
-		$("#fittext2").fitText(1.2);
-		$("#fittext3").fitText(1.1, { minFontSize: '50px', maxFontSize: '75px' });
-    	</script>
 
 	    <script>
 			var module = ons.bootstrap('my-app', ['onsen']);
@@ -56,9 +47,13 @@
                     <h1 id="fittext1">Tinglr Messenger</h1>
                     </div>
                     <p>Prototype</p>
-                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
-                    <br>
-                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('register.html', {animation : 'lift'})">Register</ons-button>
+                    <ons-bottom-toolbar style="height: 130px; background: transparent; border: none;">
+                        <div style="text-align: center" class="content-padded">
+                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
+                            <br>
+                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('register.html', {animation : 'lift'})">Register</ons-button>
+                        </div>
+                    </ons-bottom-toolbar>
                 </div>    
             </ons-page>
         </ons-template>
@@ -83,8 +78,11 @@
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
                           </li>
                         </ul>
-                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>    
-                    <br>
+                    <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
+                        <div style="text-align: center" class="content-padded">
+                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>            
+                        </div>
+                    </ons-bottom-toolbar>
                 </div>
             </ons-page>
         </ons-template>
@@ -123,8 +121,12 @@
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Confirm Password">
                           </li>
                         </ul>
-                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>
-                    <br>
+                        </ons-bottom-toolbar>
+                    <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
+                        <div style="text-align: center" class="content-padded">
+                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Register</ons-button>            
+                        </div>
+                    </ons-bottom-toolbar>
                 </div>
             </ons-page>
         </ons-template>
@@ -247,16 +249,16 @@
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
-					<div class="center">Billy Joe</div>
+					<div class="center">Billy Bob</div>
 					<div class="right"></div>
 				</ons-toolbar>
 				<div>
 				    <h1>Messages here</h1>
 				</div>
-				<div>
+				<div class= "bottomDiv">
 				    <ul class="list">
                       <li class="list__item">
-                        <textarea class="textarea textarea--transparent" style="width:100%;height:50px;margin-top:4px;" placeholder="text message"></textarea>
+                        <textarea class="textarea textarea--transparent" style="margin-top:4px;" placeholder="text message"></textarea>
                       </li>
                     </ul>
 				</div>
