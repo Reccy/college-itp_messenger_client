@@ -1,1 +1,9 @@
 /* Stylesheet to overwrite any Bootstrap CSS */
+.button--fixed{
+    /*background-color:green;*/
+    border-radius: 20px;
+    width : 60%;
+    height : 8%;
+    margin-top : 20px;
+    font-weight : bold;
+}

@@ -1,10 +1,11 @@
-<html> <!-- Temporary styling because bad style is better than no style! :D -->
+<html>
 	<head>
 		<meta charset="utf-8">
 		<title>Tinglr Messenger</title>
 
+		<!-- OnsenUI plugin -->
 		<link rel="stylesheet" href="bower_components/OnsenUI/css/onsenui.css"/>
-	    <link rel="stylesheet" href="bower_components/OnsenUI/css/onsen-css-components.css"/>
+	    <link rel="stylesheet" href="bower_components/OnsenUI/css/onsen-css-components-custom.css">
 	    <script src="bower_components/angular/angular.js"></script>
 	    <script src="bower_components/OnsenUI/js/onsenui.js"></script>
 
@@ -12,86 +13,211 @@
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
 		<script src="js/server.js"></script>
+		
+		<!--Text plugin -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+     	<script src="js/script.js"></script>
+	    <script type="text/javascript">
+		$("#fittext1").fitText();
+		$("#fittext2").fitText(1.2);
+		$("#fittext3").fitText(1.1, { minFontSize: '50px', maxFontSize: '75px' });
+    	</script>
 
 	    <script>
-	      var module = ons.bootstrap('my-app', ['onsen']);
-	      module.controller('AppController', function($scope) { });
-	      module.controller('PageController', function($scope) {
-	        ons.ready(function() {
-	        	
-	        });
-	      });
+			var module = ons.bootstrap('my-app', ['onsen']);
+			module.controller('AppController', function($scope) { });
+			module.controller('PageController', function($scope) {
+				ons.ready(function() {});
+			});
+		      
+	      	function reset(){
+	      	    menu.closeMenu();
+	      	    tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
+	        }
 	    </script>
 	</head>
 	
 	<body ng-controller="AppController">
 		
 		<!-- App Structure Code Start -->
-	    <ons-navigator title="Navigator" var="myNavigator">
-		  <ons-page>
-		    <div style="text-align: center">
-		      <br>
-		      <br>
-		      <br>
-		      <br>
-		      <br>
-		      <br>
-		      <h1>Tinglr</h1>
-		      <br>
-		      <br>
-		      <ons-button modifier="cta" onclick="myNavigator.pushPage('login.html', { animation : 'slide' } )">
-		        Login
-		      </ons-button>
-		      <br>
-		      <br>
-		      <ons-button modifier="cta" onclick="myNavigator.pushPage('register.html', { animation : 'slide' } )">
-		        Register
-		      </ons-button>
-		      <br>
-		      <br>
-		      <ons-button modifier="cta" onclick="myNavigator.pushPage('repeat.html', { animation : 'slide' } )">
-		        Repeat
-		      </ons-button>
-		    </div>
-		  </ons-page>
-		</ons-navigator>
-		
-		<ons-template id="repeat.html">
-		  <ons-page style="text-align: center;">
-		  	<div style="text-align:center;">
-		  		<h2>Repeat</h2>
-				<ons-button modifier="cta" onclick="myNavigator.pushPage('repeat.html', { animation : 'slide' } )">
-					Next
-				</ons-button>
-				<ons-back-button>
-					Return
-				</ons-back-button>
-		  	</div>
-		  </ons-page>
-		</ons-template>
-		
-		<ons-template id="login.html">
-		  <ons-page style="text-align: center;">
-		  	<div style="text-align:center;">
-		  		<h2>Login</h2>
-				<ons-button modifier="cta" onclick="myNavigator.popPage()">
-					Back
-				</ons-button>
-		  	</div>
-		  </ons-page>
-		</ons-template>
-		
-		<ons-template id="register.html">
-		  <ons-page>
-		  	<div style="text-align:center;">
-		  		<h2>Register</h2>
-			    <ons-back-button>
-					Back
-				</ons-button>
-		  	</div>
-		  </ons-page>
-		</ons-template>
+
+        <ons-sliding-menu main-page="start.html" menu-page="menu.html" side="left" type="push" max-slide-distance="250px" var="menu"></ons-sliding-menu>
+        
+        <ons-template id="start.html">
+            <ons-navigator title="Navigator" var="tinglrNav" page="landingscreen.html"></ons-navigator>
+        </ons-template>
+        
+        <ons-template id="landingscreen.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <div class="container">
+                    <h1 id="fittext1">Tinglr Messenger</h1>
+                    </div>
+                    <p>Prototype</p>
+                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
+                    <br>
+                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('register.html', {animation : 'lift'})">Register</ons-button>
+                </div>    
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="login.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>Login Page</h1>
+                        <ul class="list">
+                          <li class="list__item">
+                             <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="name">
+                          </li>
+                          <li class="list__item">
+                            <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="email">
+                          </li>
+                        </ul>
+                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>    
+                    <br>
+                    <ons-back-button>Back</ons-back-button>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="register.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>Register Page</h1>
+                    <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>
+                    <br>
+                    <ons-back-button>Back</ons-back-button>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <!-- Main Pages -->
+        <ons-template id="main_start.html">
+            <ons-page>
+            	<ons-toolbar>
+					<div class="left">
+						<ons-toolbar-button ng-click="menu.toggleMenu()">
+				          <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em;"></ons-icon>
+				        </ons-toolbar-button>
+					</div>
+					<div class="center">Tinglr</div>
+					<div class="right">
+					    <ons-toolbar-button ng-click="tinglrNav.pushPage('search.html', {animation : 'fade'})">
+					        <ons-icon icon="fa fa-search"></ons-icon>   
+					    </ons-toolbar-button>
+					</div>
+				</ons-toolbar>
+                <ons-scroller>
+                  <ons-list>
+                    <ons-list-header>Connected Friends</ons-list-header>
+                    <ons-list-item modifier="tappable">User 1</ons-list-item>
+                    <ons-list-item modifier="tappable">User 2</ons-list-item>
+                    <ons-list-item modifier="tappable">User 3</ons-list-item>
+                    <ons-list-item modifier="tappable">User 4</ons-list-item>
+                    <ons-list-item modifier="tappable">User 5</ons-list-item>
+                    <ons-list-item modifier="tappable">User 6</ons-list-item>
+                    <ons-list-item modifier="tappable">User 7</ons-list-item>
+                    <ons-list-item modifier="tappable">User 8</ons-list-item>
+                    <ons-list-item modifier="tappable">User 9</ons-list-item>
+                    <ons-list-item modifier="tappable">User 10</ons-list-item>
+                    <ons-list-item modifier="tappable">User 11</ons-list-item>
+                    <ons-list-item modifier="tappable">User 12</ons-list-item>
+                    <ons-list-item modifier="tappable">User 13</ons-list-item>
+                    <ons-list-item modifier="tappable">User 14</ons-list-item>
+                    <ons-list-item modifier="tappable">User 15</ons-list-item>
+                    <ons-list-item modifier="tappable">User 16</ons-list-item>
+                    <ons-list-item modifier="tappable">User 17</ons-list-item>
+                    <ons-list-item modifier="tappable">User 18</ons-list-item>
+                    <ons-list-item modifier="tappable">User 19</ons-list-item>
+                    <ons-list-item modifier="tappable">User 20</ons-list-item>
+                  </ons-list>
+                </ons-scroller>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="main.html">
+            <ons-navigator title="Navigator" var="tinglrNav" page="main_start.html"></ons-navigator>
+        </ons-template>
+        <!-- End of Main Page -->
+        
+        <ons-template id="profile.html">
+            <ons-navigator title="Navigator" var="tinglrNav">
+                <ons-page>
+                	<ons-toolbar>
+    					<div class="left">
+    						<ons-toolbar-button ng-click="menu.toggleMenu()">
+    				          <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em;"></ons-icon>
+    				        </ons-toolbar-button>
+    					</div>
+    					<div class="center">Profile</div>
+    					<div class="right"></div>
+    				</ons-toolbar>
+                    <div style="text-align:center;">
+                        <h1>Your Profile</h1>
+                    </div>
+                </ons-page>    
+            </ons-navigator>
+        </ons-template>
+        
+        <ons-template id="search.html">
+            <ons-page>
+            	<ons-toolbar>
+					<div class="left">
+						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
+					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
+					    </ons-toolbar-button>
+					</div>
+					<div class="center">Search</div>
+					<div class="right"></div>
+				</ons-toolbar>
+				<input type="search" class="search-input" placeholder="Search...">
+				<ons-scroller>
+                  <ons-list>
+                    <ons-list-item modifier="tappable">User 1</ons-list-item>
+                    <ons-list-item modifier="tappable">User 2</ons-list-item>
+                    <ons-list-item modifier="tappable">User 3</ons-list-item>
+                    <ons-list-item modifier="tappable">User 4</ons-list-item>
+                    <ons-list-item modifier="tappable">User 5</ons-list-item>
+                    <ons-list-item modifier="tappable">User 6</ons-list-item>
+                    <ons-list-item modifier="tappable">User 7</ons-list-item>
+                    <ons-list-item modifier="tappable">User 8</ons-list-item>
+                    <ons-list-item modifier="tappable">User 9</ons-list-item>
+                    <ons-list-item modifier="tappable">User 10</ons-list-item>
+                    <ons-list-item modifier="tappable">User 11</ons-list-item>
+                    <ons-list-item modifier="tappable">User 12</ons-list-item>
+                    <ons-list-item modifier="tappable">User 13</ons-list-item>
+                    <ons-list-item modifier="tappable">User 14</ons-list-item>
+                    <ons-list-item modifier="tappable">User 15</ons-list-item>
+                    <ons-list-item modifier="tappable">User 16</ons-list-item>
+                    <ons-list-item modifier="tappable">User 17</ons-list-item>
+                    <ons-list-item modifier="tappable">User 18</ons-list-item>
+                    <ons-list-item modifier="tappable">User 19</ons-list-item>
+                    <ons-list-item modifier="tappable">User 20</ons-list-item>
+                  </ons-list>
+                </ons-scroller>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="conversation.html">
+        </ons-template>
+        
+        <!-- Other templates -->
+        
+        <ons-template id="menu.html">
+            <ons-list>
+                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true})">
+                    Conversations
+                </ons-list-item>
+                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
+                    Profile
+                </ons-list-item>
+                <ons-list-item modifier="chevron" onclick="reset()">
+                    Logout
+                </ons-list-item>
+            </ons-list>
+        </ons-template>
 		
 		<!-- App Structure Code End -->
+		
 	</body>
 </html>

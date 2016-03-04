@@ -1,0 +1,100 @@
+<html> <!-- Temporary styling because bad style is better than no style! :D -->
+	<head>
+		<meta charset="utf-8">
+		<title>OnsenUI Test</title>
+
+		<link rel="stylesheet" href="bower_components/OnsenUI/css/onsenui.css"/>
+	    <link rel="stylesheet" href="bower_components/OnsenUI/css/onsen-css-components.css"/>
+	    <script src="bower_components/angular/angular.js"></script>
+	    <script src="bower_components/OnsenUI/js/onsenui.js"></script>
+
+		<!-- Javascript plugins for client -->
+		<script src="js/jquery-2.2.0.min.js"></script>
+
+	    <script>
+	      var module = ons.bootstrap('my-app', ['onsen']);
+	      module.controller('AppController', function($scope) { });
+	      module.controller('PageController', function($scope) {
+	        ons.ready(function() {
+	        	
+	        });
+	      });
+	    </script>
+	    
+	    <!-- TEST CODE -->
+        <script>
+            $('html').keypress(function(evt){
+                if(evt.which === 82 || evt.which === 114){
+                   reset();
+                }
+            });
+            
+            function reset(){
+                myNavigator.resetToPage('landingscreen.html', {animation : 'fade'});
+                //alert("RESET");
+            }
+        </script>
+	</head>
+	
+    <body ng-controller="AppController">
+        
+        <!-- App Structure Code Start -->
+        <ons-navigator title="Navigator" var="myNavigator">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>UI Nav Test</h1>
+                    <p>Press 'R' to reset!</p>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
+                    <br>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('register.html', {animation : 'lift'})">Register</ons-button>
+                </div>    
+            </ons-page>
+        </ons-navigator>
+        
+        <ons-template id="landingscreen.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>UI Nav Test</h1>
+                    <p>Press 'R' to reset!</p>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
+                    <br>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('register.html', {animation : 'lift'})">Register</ons-button>
+                </div>    
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="login.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>Login Page</h1>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('main.html', {animation : 'lift'})">Go to Main</ons-button>    
+                    <br>
+                    <ons-back-button>Back</ons-back-button>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="register.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>Register Page</h1>
+                    <ons-button modifier="large" onclick="myNavigator.pushPage('main.html', {animation : 'lift'})">Go to Main</ons-button>
+                    <br>
+                    <ons-back-button>Back</ons-back-button>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="main.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h1>Main Page</h1>
+                    <ons-button modifier="large" onclick="reset()">Logout</ons-button>
+                </div>
+            </ons-page>
+        </ons-template>
+        <!-- App Structure Code End -->
+        
+        
+    </body>
+</html>
