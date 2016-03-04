@@ -59,6 +59,7 @@ function initialize_app() {
             */
             if (!serverOnline) {
                 console.log("SERVER offline! Please try again later!");
+                tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
                 if(private_chan !== "")
                 {
                     pubnub.unsubscribe({
@@ -94,6 +95,7 @@ function initialize_app() {
                             if (m.m_type === "server_shutdown") {
                                 serverOnline = false;
                                 appInitialized = false;
+                                tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
                                 console.log("SERVER shutdown message received");
                                 pubnub.unsubscribe({
                                     channel: private_chan,
@@ -139,6 +141,7 @@ function initialize_app() {
                                         console.log("Disconnected from GLOBAL CHANNEL!");
                                         console.log("App Initialized!");
                                         appInitialized = true;
+                                        tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
                                     }
                                 });
                             }
@@ -158,6 +161,7 @@ function initialize_app() {
                     if (m.m_type === "server_shutdown") {
                         serverOnline = false;
                         appInitialized = false;
+                        tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
                         console.log("SERVER shutdown message received");
                         pubnub.unsubscribe({
                             channel: private_chan,
@@ -173,6 +177,7 @@ function initialize_app() {
                 if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                     console.log("SERVER offline! Please try again later!");
                     serverOnline = false;
+                    tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
                     pubnub.unsubscribe({
                         channel: private_chan,
                         callback: function() {
@@ -203,6 +208,7 @@ function initialize_app() {
                     for (i = 0; i < m.uuids.length; i++) {
                         if (m.uuids[i] === "SERVER") {
                             appInitialized = true;
+                            tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
                         }
                     }
 
@@ -210,6 +216,7 @@ function initialize_app() {
                     if (appInitialized === false) {
                         console.log("SERVER offline! Please try again later!");
                         serverOnline = false;
+                        tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
                         private_chan = "";
                         pubnub.unsubscribe({
                             channel: private_chan,
@@ -225,6 +232,7 @@ function initialize_app() {
                                 console.log("Disconnected from GLOBAL CHANNEL!");
                                 console.log("App Initialized!");
                                 appInitialized = true;
+                                tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
                             }
                         });
                     }

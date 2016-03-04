@@ -25,12 +25,13 @@
 
 	    <script>
 			var module = ons.bootstrap('my-app', ['onsen']);
-			module.controller('AppController', function($scope) {});
-    	    module.controller('PageController', function($scope) {
+		    module.controller('AppController', function($scope) {});
+		    module.controller('PageController', function($scope) {
                 ons.ready(function() {
                 	
                 });
             });
+		      
 	      	function reset(){
 	      	    menu.closeMenu();
 	      	    tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
@@ -46,7 +47,24 @@
         
         
         <ons-template id="start.html">
-            <ons-navigator title="Navigator" var="tinglrNav" page="landingscreen.html"></ons-navigator>
+            <ons-navigator title="Navigator" var="tinglrNav" page="splash.html"></ons-navigator>
+        </ons-template>
+        
+        <ons-template id="splash.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h4>Initializing...</h4> 
+                    <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="connection_error.html">
+            <ons-page>
+                <div style="text-align:center;">
+                    <h4>Error Connecting to Server!</h4> 
+                </div>
+            </ons-page>
         </ons-template>
         
         <ons-template id="landingscreen.html">
@@ -67,8 +85,8 @@
             <ons-page>
                 <ons-toolbar>
 					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('landingscreen.html', {animation : 'fade'})">
-				          <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>
+						<ons-toolbar-button ng-click="menu.toggleMenu()">
+				          <ons-icon icon="fa fa-chevron-circle-left" style="font-size: 32px; width: 1em;"></ons-icon>
 				        </ons-toolbar-button>
 					</div>
 					<div class="center">Tinglr</div>
@@ -85,20 +103,13 @@
                         </ul>
                     <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>    
                     <br>
+                    <ons-back-button>Back</ons-back-button>
                 </div>
             </ons-page>
         </ons-template>
         
         <ons-template id="register.html">
             <ons-page>
-                <ons-toolbar>
-					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('landingscreen.html', {animation : 'fade'})">
-				          <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>
-				        </ons-toolbar-button>
-					</div>
-					<div class="center">Tinglr</div>
-				</ons-toolbar>
                 <div style="text-align:center;">
                     <h1>Register Page</h1>
                         <ul class="list">
@@ -125,6 +136,7 @@
                         </ul>
                     <ons-button modifier="fixed" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>
                     <br>
+                    <ons-back-button>Back</ons-back-button>
                 </div>
             </ons-page>
         </ons-template>
@@ -138,17 +150,17 @@
 				          <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em;"></ons-icon>
 				        </ons-toolbar-button>
 					</div>
-					<div class="center">Conversations</div>
+					<div class="center">Tinglr</div>
 					<div class="right">
 					    <ons-toolbar-button ng-click="tinglrNav.pushPage('search.html', {animation : 'fade'})">
 					        <ons-icon icon="fa fa-search"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
 				</ons-toolbar>
-				<ons-scroller>
+                <ons-scroller>
                   <ons-list>
                     <ons-list-header>Connected Friends</ons-list-header>
-                    <ons-list-item modifier="chevron" ng-click="tinglrNav.pushPage('conversation.html', {animation : 'lift'})">User 1</ons-list-item>
+                    <ons-list-item modifier="tappable">User 1</ons-list-item>
                     <ons-list-item modifier="tappable">User 2</ons-list-item>
                     <ons-list-item modifier="tappable">User 3</ons-list-item>
                     <ons-list-item modifier="tappable">User 4</ons-list-item>
@@ -188,7 +200,7 @@
     				        </ons-toolbar-button>
     					</div>
     					<div class="center">Profile</div>
-    					<!--<div class="right"></div>-->
+    					<div class="right"></div>
     				</ons-toolbar>
                     <div style="text-align:center;">
                         <h1>Your Profile</h1>
@@ -197,7 +209,6 @@
             </ons-navigator>
         </ons-template>
         
-        <!--  Template to search for other user -->
         <ons-template id="search.html">
             <ons-page>
             	<ons-toolbar>
@@ -210,7 +221,6 @@
 					<div class="right"></div>
 				</ons-toolbar>
 				<input type="search" class="search-input" placeholder="Search...">
-				
 				<ons-scroller>
                   <ons-list>
                     <ons-list-item modifier="tappable">User 1</ons-list-item>
@@ -238,29 +248,7 @@
             </ons-page>
         </ons-template>
         
-        <!-- Template for user's conversation -->
         <ons-template id="conversation.html">
-            <ons-page>
-                <ons-toolbar>
-					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
-					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
-					    </ons-toolbar-button>
-					</div>
-					<div class="center">Billy Joe</div>
-					<div class="right"></div>
-				</ons-toolbar>
-				<div>
-				    <h1>Messages here</h1>
-				</div>
-				<div>
-				    <ul class="list">
-                      <li class="list__item">
-                        <textarea class="textarea textarea--transparent" style="width:100%;height:50px;margin-top:4px;" placeholder="text message"></textarea>
-                      </li>
-                    </ul>
-				</div>
-            </ons-page>
         </ons-template>
         
         <!-- Other templates -->
