@@ -41,12 +41,15 @@
         </ons-template>
         
         <ons-template id="landingscreen.html">
-            <ons-page>
+                <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center;">
-                    <div class="container">
-                    <h1 id="fittext1">Tinglr Messenger</h1>
+                    <div class="fitlogo">
+                        <img src="images/Tinglr_logo.png"></img>
                     </div>
-                    <p>Prototype</p>
+                    <div class="container">
+                    <!--<h1 id="fittext1">Tinglr Messenger</h1>-->
+                    </div>
+                    <h3>Messenger Prototype</h3>
                     <ons-bottom-toolbar style="height: 130px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
                             <ons-button class="button--large" ng-click="tinglrNav.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
@@ -78,6 +81,12 @@
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
                           </li>
                         </ul>
+                        <!--<div class="login-form">
+                            <input type="email" class="text-input--underbar" placeholder="Email" value="">
+                            <input type="password" class="text-input--underbar" placeholder="Password" value="">
+                            <br><br>
+                            <ons-button modifier="quiet" class="forgot-password">Forgot password?</ons-button>
+                        </div>-->
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
                             <ons-button class="button--large" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>            
@@ -111,16 +120,26 @@
                           </li>                          
                           <li class="list__item">
                             <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
-                          </li></li>                          
+                          </li>                          
                           <li class="list__item">
                             <input type="email" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Email">
-                          </li></li>                          
+                          </li>                          
                           <li class="list__item">
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
-                          </li>                          <li class="list__item">
+                          </li>
+                          <li class="list__item">
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Confirm Password">
                           </li>
                         </ul>
+                        <!--<div class="register-form">
+                            <input type="text" class="text-input--underbar" placeholder="First Name" value="">
+                            <input type="text" class="text-input--underbar" placeholder="Surname" value="">
+                            <input type="date" class="text-input--underbar" placeholder="Date of birth" value="">
+                            <input type="text" class="text-input--underbar" placeholder="User Name" value="">
+                            <input type="email" class="text-input--underbar" placeholder="Email" value="">
+                            <input type="password" class="text-input--underbar" placeholder="Password" value="">
+                            <input type="password" class="text-input--underbar" placeholder="Confirm Password" value="">
+                        </div>-->
                         </ons-bottom-toolbar>
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">

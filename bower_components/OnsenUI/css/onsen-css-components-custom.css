@@ -3991,3 +3991,46 @@ input[type="search"].search-input::-webkit-search-cancel-button {
   width:100%;
   height:50px
 }
+
+.fitlogo{
+  padding-top: 100px;
+}
+
+.page--bgimage{
+  background-image: url('images/mainscreenbg.png');
+}
+
+.login-form {
+  text-align: center;
+  width: 80%;
+  margin: 60px auto 0;
+}
+
+.register-form {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+input[type=email], input[type=password] {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.login-button {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.forgot-password {
+  display: inline-block;
+  margin: 8px auto 0 auto;
+  font-size: 14px;
+}
