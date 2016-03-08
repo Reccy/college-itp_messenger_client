@@ -111,6 +111,7 @@ function initialize_app() {
                             }
                             else if(m.m_type === "chat_init") {
                                 console.log("INITIATING CHAT!");
+                                $("#other_username").html(m.sender);
                                 pubnub.subscribe({
                                     channel: m.channel,
                                     connect: function() {
@@ -121,6 +122,7 @@ function initialize_app() {
                                     callback: function(m) {
                                         if(m.m_type === "chat_message") {
                                             console.log(m.sender + ": " + m.contents);
+                                            displayMessage(m.sender, m.contents);
                                         }
                                     }
                                 })

@@ -36,26 +36,27 @@
                     });
                 }
                 
-                $scope.write = function(side, msg){
-                    switch(side){
-        	            case 'left':
-        	                console.log(msg);
-        	                $scope.inputMSG = '';
-        	                break;
-                        case 'right':
-                            console.log(msg);
-                            $scope.inputMSG = '';
-                            break;
-                        default:
-                            console.log(msg);
-                            $scope.inputMSG = '';
-                            //console.log("INVALID SIDE!");
-    	            }
+                $scope.send = function(msg){
+                    sendMessage(msg);
+                    $scope.inputMSG = '';
                 }
             });
 	      	function reset(){
 	      	    menu.closeMenu();
 	      	    tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
+	        }
+	        
+	        function displayMessage(sender, msg){
+	            if(sender === client_username){
+	                //User's message, display on the right
+	                console.log("R|| " + sender + ": " + msg);
+	                $("#chatList > div").append("<div class='msgBoxRight'><p>" + msg + "</p></div>");
+	            }
+	            else{
+	                //Sender's message, display on the left
+	                console.log("L|| " + sender + ": " + msg);
+	                $("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
+	            }
 	        }
 	    </script>
 	    
@@ -352,50 +353,15 @@
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
-					<div class="center">Demo User</div>
+					<div id="other_username" class="center"></div>
 					<div class="right"></div>
 				</ons-toolbar>
-			    <ons-scroller style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
-			        <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
-				    <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
-				    <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
-				    <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxLeft">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
-				    </div>
-				    <div class="msgBoxRight">
-				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
-				    </div>
+			    <ons-scroller id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
+			        <!-- Message transactions -->
 			    </ons-scroller>
-			    <div style="border-top:solid #666699;">
+			    <div style="border-top:solid #83A0CA;">
                 <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message..."></textarea>
-                <ons-button class="button--large" ng-click="write('left',inputMSG)">Send Message</ons-button>            
+                <ons-button class="button--large" ng-click="send(inputMSG)">Send Message</ons-button>            
             </ons-page>
         </ons-template>
 		<!-- App Structure Code End -->
