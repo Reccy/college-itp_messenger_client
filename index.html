@@ -18,30 +18,123 @@
 			var module = ons.bootstrap('my-app', ['onsen']);
 			module.controller('AppController', function($scope) {});
     	    module.controller('PageController', function($scope) {
-                ons.ready(function() {
-                	
-                });
+                ons.ready(function() {});
+
+                $scope.tempLogin = function(newUsername){
+                    tinglrNav.pushPage('main_start.html', {animation : 'fade'});
+                    $scope.username = newUsername;
+                    sendMessage(newUsername);
+                };
+                
+                $scope.promptUser = function(){
+                    ons.notification.prompt({
+                        title: 'Start Chat',
+                        message: 'Who do you want to connect to?',
+                        callback: function(otherUser) {
+                            sendMessage(otherUser);
+                        }
+                    });
+                }
+                
+                $scope.write = function(side, msg){
+                    switch(side){
+        	            case 'left':
+        	                console.log(msg);
+        	                $scope.inputMSG = '';
+        	                break;
+                        case 'right':
+                            console.log(msg);
+                            $scope.inputMSG = '';
+                            break;
+                        default:
+                            console.log(msg);
+                            $scope.inputMSG = '';
+                            //console.log("INVALID SIDE!");
+    	            }
+                }
             });
 	      	function reset(){
 	      	    menu.closeMenu();
 	      	    tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
 	        }
 	    </script>
+	    
+	    <!-- Stylesheet for message boxes -->
+	    <style>
+	        .msgBoxLeft{
+	            width:100%;
+	            float:left;
+	            margin-left:10px;
+	        }
+	        
+	        .msgBoxLeft > p{
+	            float:left;
+	            color:white;
+	            background-color:#3498db;
+	            padding:5px;
+	            max-width:60%;
+	        }
+	        
+	        .msgBoxRight{
+	            width:100%;
+	            float:right;
+	            margin-right:10px;
+	        }
+	        
+	        .msgBoxRight > p{
+	            float:right;
+	            color:white;
+	            background-color:#9b59b6;
+	            padding:5px;
+	            max-width:60%;
+	        }
+	    </style>
 	</head>
 	
 	<body ng-controller="AppController">
 		
+		<!-- Other templates -->
+        
+        <ons-template id="menu.html">
+            <ons-list>
+                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true})">
+                    Conversations
+                </ons-list-item>
+                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
+                    Profile
+                </ons-list-item>
+                <ons-list-item modifier="chevron" onclick="reset()">
+                    Logout
+                </ons-list-item>
+            </ons-list>
+        </ons-template>
+		
 		<!-- App Structure Code Start -->
 
-        <ons-sliding-menu main-page="start.html" menu-page="menu.html" side="left" type="push" max-slide-distance="250px" var="menu"></ons-sliding-menu>
+        <ons-sliding-menu main-page="start.html" menu-page="menu.html" side="left" type="push" max-slide-distance="250px" var="menu" swipeable=false></ons-sliding-menu>
         
-        
+        <!-- Standard start code -->
         <ons-template id="start.html">
-            <ons-navigator title="Navigator" var="tinglrNav" page="landingscreen.html"></ons-navigator>
+            <ons-navigator title="Navigator" var="tinglrNav" page="splash.html"></ons-navigator>
+        </ons-template>
+        
+        <!-- TEST -->
+        <!--<ons-template id="start.html">-->
+        <!--    <ons-navigator title="Navigator" var="tinglrNav" page="landingscreen.html"></ons-navigator>-->
+        <!--</ons-template>-->
+        
+        <!-- Splash Screen for server init -->
+        <ons-template id="splash.html">
+            <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
+                <div style="text-align:center; margin-top:50%;">
+                    <h4 style="color:white;">Starting Tinglr...</h4> 
+                    <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color:white;"></i>
+                </div>
+            </ons-page>
         </ons-template>
         
         <ons-template id="landingscreen.html">
-                <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
+            <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center;">
                     <div class="fitlogo">
                         <img src="images/Tinglr_logo.png"></img>
@@ -61,8 +154,18 @@
             </ons-page>
         </ons-template>
         
+        <ons-template id="connection_error.html">
+            <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
+                <div style="text-align:center; margin-top:50%;">
+                    <h4 style="color:white;">Error Connecting to Server!</h4> 
+                    <h4 style="color:white;">Reconnecting...</h4> 
+                    <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color:white;"></i>
+                </div>
+            </ons-page>
+        </ons-template>
+        
         <ons-template id="login.html">
-            <ons-page>
+            <ons-page ng-controller="PageController">
                 <ons-toolbar>
 					<div class="left">
 						<ons-toolbar-button ng-click="tinglrNav.popPage('landingscreen.html', {animation : 'fade'})">
@@ -75,7 +178,7 @@
                     <h1>Login Page</h1>
                         <ul class="list">
                           <li class="list__item">
-                             <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
+                             <input ng-model="loginUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
                           </li>
                           <li class="list__item">
                             <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
@@ -89,7 +192,7 @@
                         </div>-->
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
-                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Submit</ons-button>            
+                            <ons-button class="button--large" ng-click="tempLogin(loginUsername);">Submit</ons-button>            
                         </div>
                     </ons-bottom-toolbar>
                 </div>
@@ -97,7 +200,7 @@
         </ons-template>
         
         <ons-template id="register.html">
-            <ons-page>
+            <ons-page ng-controller="PageController">
                 <ons-toolbar>
 					<div class="left">
 						<ons-toolbar-button ng-click="tinglrNav.popPage('landingscreen.html', {animation : 'fade'})">
@@ -119,7 +222,7 @@
                             <input type="date" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="DOB">
                           </li>                          
                           <li class="list__item">
-                            <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
+                            <input ng-model="registerUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
                           </li>                          
                           <li class="list__item">
                             <input type="email" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Email">
@@ -143,7 +246,7 @@
                         </ons-bottom-toolbar>
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
-                            <ons-button class="button--large" ng-click="tinglrNav.pushPage('main_start.html', {animation : 'fade'})">Register</ons-button>            
+                            <ons-button class="button--large" ng-click="tempLogin(registerUsername);">Register</ons-button>            
                         </div>
                     </ons-bottom-toolbar>
                 </div>
@@ -169,26 +272,7 @@
 				<ons-scroller>
                   <ons-list>
                     <ons-list-header>Connected Friends</ons-list-header>
-                    <ons-list-item modifier="chevron" ng-click="tinglrNav.pushPage('conversation.html', {animation : 'lift'})">User 1</ons-list-item>
-                    <ons-list-item modifier="tappable">User 2</ons-list-item>
-                    <ons-list-item modifier="tappable">User 3</ons-list-item>
-                    <ons-list-item modifier="tappable">User 4</ons-list-item>
-                    <ons-list-item modifier="tappable">User 5</ons-list-item>
-                    <ons-list-item modifier="tappable">User 6</ons-list-item>
-                    <ons-list-item modifier="tappable">User 7</ons-list-item>
-                    <ons-list-item modifier="tappable">User 8</ons-list-item>
-                    <ons-list-item modifier="tappable">User 9</ons-list-item>
-                    <ons-list-item modifier="tappable">User 10</ons-list-item>
-                    <ons-list-item modifier="tappable">User 11</ons-list-item>
-                    <ons-list-item modifier="tappable">User 12</ons-list-item>
-                    <ons-list-item modifier="tappable">User 13</ons-list-item>
-                    <ons-list-item modifier="tappable">User 14</ons-list-item>
-                    <ons-list-item modifier="tappable">User 15</ons-list-item>
-                    <ons-list-item modifier="tappable">User 16</ons-list-item>
-                    <ons-list-item modifier="tappable">User 17</ons-list-item>
-                    <ons-list-item modifier="tappable">User 18</ons-list-item>
-                    <ons-list-item modifier="tappable">User 19</ons-list-item>
-                    <ons-list-item modifier="tappable">User 20</ons-list-item>
+                    <ons-list-item modifier="chevron" ng-click="tinglrNav.pushPage('conversation.html', {animation : 'lift'})">Demo User</ons-list-item>
                   </ons-list>
                 </ons-scroller>
             </ons-page>
@@ -261,45 +345,59 @@
         
         <!-- Template for user's conversation -->
         <ons-template id="conversation.html">
-            <ons-page>
+            <ons-page ng-controller="PageController" ng-init="promptUser();">
                 <ons-toolbar>
 					<div class="left">
 						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
-					<div class="center">Billy Bob</div>
+					<div class="center">Demo User</div>
 					<div class="right"></div>
 				</ons-toolbar>
-				<div>
-				    <h1>Messages here</h1>
-				</div>
-				<div class= "bottomDiv">
-				    <ul class="list">
-                      <li class="list__item">
-                        <textarea class="textarea textarea--transparent" style="margin-top:4px;" placeholder="text message"></textarea>
-                      </li>
-                    </ul>
-				</div>
+			    <ons-scroller style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
+			        <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+				    <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+				    <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+				    <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxLeft">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis molestie viverra ullamcorper. Aliquam eu erat convallis lectus aliquet volutpat eget id.</p>    
+				    </div>
+				    <div class="msgBoxRight">
+				        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque aliquet, arcu in suscipit rhoncus, magna est auctor mauris, at bibendum posuere.</p>    
+				    </div>
+			    </ons-scroller>
+			    <div style="border-top:solid #666699;">
+                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message..."></textarea>
+                <ons-button class="button--large" ng-click="write('left',inputMSG)">Send Message</ons-button>            
             </ons-page>
         </ons-template>
-        
-        <!-- Other templates -->
-        
-        <ons-template id="menu.html">
-            <ons-list>
-                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true})">
-                    Conversations
-                </ons-list-item>
-                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
-                    Profile
-                </ons-list-item>
-                <ons-list-item modifier="chevron" onclick="reset()">
-                    Logout
-                </ons-list-item>
-            </ons-list>
-        </ons-template>
-		
 		<!-- App Structure Code End -->
 		
 	</body>
