@@ -1,5 +1,5 @@
 // Global variables
-var global_chan = "itp_test_channel_nodejs"; //Global channel name
+var global_chan = "chan_global"; //Global channel name
 var private_chan = ""; //Private channel name
 var client_uuid = PUBNUB.uuid(); //Temporary UUID
 var client_username = null; //Client's username
@@ -12,25 +12,30 @@ var verifyTimeout; //Timeout to verify the server connection
 
 //PUBNUB object
 var pubnub = PUBNUB({
+    ssl: true, // Enable TLS Tunneling over TCP, allows the app to run on HTTPS servers.
     subscribe_key: 'sub-c-a91c35f6-ca98-11e5-a9b2-02ee2ddab7fe',
     publish_key: 'pub-c-0932089b-8fc7-4329-b03d-7c47fe828971',
     uuid: client_uuid,
-    heartbeat: 30,
-    ssl: true
+    heartbeat: 30
 });
 
 //Debug console log
 console.log("Your UUID: " + client_uuid);
 
-/* Initialize the app */
+/**************************/
+/*Initialization Functions*/
+/**************************/
+
+/* 
+    Initialize the app 
+    SHOULD ONLY BE CALLED ON STARTUP!!!
+*/
 function initialize_app() {
     clearTimeout(verifyTimeout); //Clear the timeout verification
-    appInitialized = false;
+    //appInitialized = false;
     
-    //Debug Start
     console.log("\n<==========[INITIALIZING APP]==========>");
     console.log("Connecting to GLOBAL CHANNEL");
-    //Debug End
 
     /* 
         Check who is online on the global channel.
@@ -59,13 +64,18 @@ function initialize_app() {
             */
             if (!serverOnline) {
                 console.log("SERVER offline! Please try again later!");
-                tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
+                displayError("serverOffline");
                 if(private_chan !== "")
                 {
                     pubnub.unsubscribe({
                         channel: private_chan,
                     });        
                 }
+            } else {
+                //Verify server's connection
+                verifyTimeout = setTimeout(function() {
+                            verify_server_connection()
+                        }, 5000);
             }
             
             //Connect to the global channel
@@ -81,7 +91,7 @@ function initialize_app() {
             channel: global_chan,
             callback: function(m) {
                 //console.log("Received message: " + JSON.stringify(m));
-                if (m.m_type === "i_connect" && m.uuid === client_uuid) {
+                if (m.m_type === "initial_connect" && m.uuid === client_uuid) {
                     if (!serverOnline) {
                         console.log("SERVER connected!");
                         serverOnline = true;
@@ -93,9 +103,9 @@ function initialize_app() {
                         channel: private_chan,
                         callback: function(m) {
                             if (m.m_type === "server_shutdown") {
+                                displayError("serverOffline");
                                 serverOnline = false;
-                                appInitialized = false;
-                                tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
+                                //appInitialized = false;
                                 console.log("SERVER shutdown message received");
                                 pubnub.unsubscribe({
                                     channel: private_chan,
@@ -104,7 +114,7 @@ function initialize_app() {
                                     }
                                 });
                             }
-                            else if(m.m_type === "usr_login_reply") {
+                            else if(m.m_type === "user_login_reply") {
                                 console.log("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
                                 loggedIn = true;
                                 client_username = m.username;
@@ -130,22 +140,31 @@ function initialize_app() {
                         },
                         connect: function() {
                             console.log("Connected to: " + private_chan);
-                            verifyTimeout = setTimeout(function() {
-                                verify_server_connection()
-                            }, 5000);
                         },
                         presence: function(m) {
                             //console.log("Presence event: " + JSON.stringify(m));
-                            if (m.uuid === "SERVER" && m.action === "join" && !appInitialized) {
-                                pubnub.unsubscribe({
-                                    channel: global_chan,
-                                    callback: function(m) {
-                                        console.log("Disconnected from GLOBAL CHANNEL!");
-                                        console.log("App Initialized!");
-                                        appInitialized = true;
-                                        tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
-                                    }
-                                });
+                            if (m.uuid === "SERVER" && m.action === "join") {
+                                if(appInitialized){
+                                    pubnub.unsubscribe({
+                                        channel: global_chan,
+                                        callback: function(m) {
+                                            console.log("Disconnected from GLOBAL CHANNEL!");
+                                            console.log("App Initialized!");
+                                            hideError("serverOffline");
+                                            appInitialized = true;
+                                        }
+                                    });
+                                } else {
+                                    pubnub.unsubscribe({
+                                        channel: global_chan,
+                                        callback: function(m) {
+                                            console.log("Disconnected from GLOBAL CHANNEL!");
+                                            console.log("App Initialized!");
+                                            hideError("serverOffline");
+                                            appInitialized = true;
+                                        }
+                                    });
+                                }
                             }
 
                             if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
@@ -161,9 +180,9 @@ function initialize_app() {
                     });
                 } else if (m.m_type === "server_shutdown") {
                     if (m.m_type === "server_shutdown") {
+                        displayError("serverOffline");
                         serverOnline = false;
-                        appInitialized = false;
-                        tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
+                        //appInitialized = false;
                         console.log("SERVER shutdown message received");
                         pubnub.unsubscribe({
                             channel: private_chan,
@@ -179,7 +198,7 @@ function initialize_app() {
                 if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                     console.log("SERVER offline! Please try again later!");
                     serverOnline = false;
-                    tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
+                    displayError("serverOffline");
                     pubnub.unsubscribe({
                         channel: private_chan,
                         callback: function() {
@@ -195,6 +214,9 @@ function initialize_app() {
         Verify that the client has connected with the server on the private channel
     */
     function verify_server_connection() {
+        console.log("Verifying Server Connection...");
+        console.log(appInitialized === true);
+        console.log("App initialized: " + appInitialized);
         //If the app is not initialized...
         if (appInitialized === false) {
             
@@ -206,11 +228,13 @@ function initialize_app() {
             pubnub.here_now({
                 channel: private_chan,
                 callback: function(m) {
-                    //Check for the SERVER
+                    console.log(m.uuids[0]);
+                    
+                    //Check for the SERVER [Not required???]
                     for (i = 0; i < m.uuids.length; i++) {
                         if (m.uuids[i] === "SERVER") {
+                            hideError("serverOffline");
                             appInitialized = true;
-                            tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
                         }
                     }
 
@@ -218,14 +242,14 @@ function initialize_app() {
                     if (appInitialized === false) {
                         console.log("SERVER offline! Please try again later!");
                         serverOnline = false;
-                        tinglrNav.pushPage('connection_error.html', {animation : 'fade'});
-                        private_chan = "";
+                        displayError("serverOffline");
                         pubnub.unsubscribe({
                             channel: private_chan,
                             callback: function() {
                                 appInitialized();
                             }
                         });
+                        private_chan = "";
                     } else {
                     //Otherwise disconnect from the global channel and finish initialization
                         pubnub.unsubscribe({
@@ -233,8 +257,8 @@ function initialize_app() {
                             callback: function(m) {
                                 console.log("Disconnected from GLOBAL CHANNEL!");
                                 console.log("App Initialized!");
+                                hideError("serverOffline");
                                 appInitialized = true;
-                                tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
                             }
                         });
                     }
@@ -244,8 +268,66 @@ function initialize_app() {
     }
 }
 
+//Display connection errors to the user
+function displayError(error){
+    if(appInitialized){
+        //Modals
+        switch(error) {
+            case "serverOffline":
+                connection_modal.show();
+                break;
+        }    
+    } else {
+        //Pages
+        switch(error) {
+            case "serverOffline":
+                tinglrNav.pushPage('connection_server_offline.html', {animation : 'fade'});
+                break;
+        }
+    }
+}
+
+//Hide connection errors from the user
+function hideError(error){
+    if(appInitialized){
+        //Modal
+        switch(error) {
+            case "serverOffline":
+                connection_modal.hide();
+                break;
+        }
+    } else {
+        //Pages
+        switch(error) {
+            case "serverOffline":
+                tinglrNav.pushPage('landingscreen.html', {animation : 'fade'});
+                break;
+        }
+    }
+}
+
+/******************************/
+/*Initialization Functions End*/
+/******************************/
+
 //START OF SCRIPT
 initialize_app();
+
+//Login function
+function login(username, password){
+    
+}
+
+//Register function
+function register(firstname, surname, username, password){
+    
+}
+
+/* REAL SEND MESSAGE FUNCTION
+sendMessage(important data){
+    
+}
+*/
 
 //TEMPORARY CODE FOR USER'S INPUT
 function sendMessage(data){
@@ -259,9 +341,8 @@ function sendMessage(data){
     }
     else if(!loggedIn)
     {
-        
         msg = {
-            "m_type": "usr_login",
+            "m_type": "user_login",
             "uuid": client_uuid,
             "contents": data
         };

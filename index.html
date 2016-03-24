@@ -40,6 +40,11 @@
                     sendMessage(msg);
                     $scope.inputMSG = '';
                 }
+                
+                $scope.reconnect = function(){
+                    console.log("Reconnecting...");
+                    initialize_app();
+                }
             });
 	      	function reset(){
 	      	    menu.closeMenu();
@@ -68,6 +73,17 @@
 	            margin-left:10px;
 	        }
 	        
+	        .msgBoxLeft{
+	            width: 100%;
+                height: 100%;
+                background: red;
+                position: relative;
+                -moz-border-radius:    10px;
+                -webkit-border-radius: 10px;
+                border-radius:         10px;
+
+	        }
+	        
 	        .msgBoxLeft > p{
 	            float:left;
 	            color:white;
@@ -90,7 +106,17 @@
 	            padding:5px;
 	            max-width:60%;
 	            word-wrap:break-word;
+	            animation: pulse 5s infinite;
 	        }
+	        
+	        @keyframes pulse {
+                  0% {
+                        background-color: #001F3F;
+                      }
+                  100% {
+                       background-color: #FF4136;
+                    }
+            }
 	    </style>
 	</head>
 	
@@ -157,11 +183,21 @@
             </ons-page>
         </ons-template>
         
-        <ons-template id="connection_error.html">
-            <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
+        <ons-template id="connection_server_offline.html">
+            <ons-page ng-controller="PageController" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center; margin-top:50%;">
                     <h4 style="color:white;">Error Connecting to Server!</h4> 
-                    <h4 style="color:white;">Reconnecting...</h4> 
+                    <h4 style="color:white;">Attempting to Reconnect...</h4> 
+                    <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color:white;"></i>
+                </div>
+            </ons-page>
+        </ons-template>
+        
+        <ons-template id="connection_error.html">
+            <ons-page ng-controller="PageController" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
+                <div style="text-align:center; margin-top:50%;">
+                    <h4 style="color:white;">Error Connecting to Server!</h4> 
+                    <h4 style="color:white;">Attempting to Reconnect...</h4> 
                     <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color:white;"></i>
                 </div>
             </ons-page>
@@ -360,13 +396,53 @@
 				</ons-toolbar>
 			    <ons-scroller id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
 			        <!-- Message transactions -->
+			        <div class="buttons">
+			            <div class="button-bar" style="width:100%;">
+                          <div class="button-bar__item">
+                            <ons-button modifier="emo1"><ons-ripple></ons-ripple>Red</ons-button>
+                          </div>
+                        
+                          <div class="button-bar__item">
+                            <ons-button modifier="emo2"><ons-ripple></ons-ripple>Yellow</ons-button>
+                          </div>
+                        
+                          <div class="button-bar__item">
+                            <ons-button modifier="emo3"><ons-ripple></ons-ripple>Blue</ons-button>
+                          </div>
+                          
+                          <div class="button-bar__item">
+                            <ons-button modifier="emo4"><ons-ripple></ons-ripple>Green</ons-button>
+                          </div>
+                          
+                          <div class="button-bar__item">
+                            <ons-button modifier="emo5"><ons-ripple></ons-ripple>Orange</ons-button>
+                          </div>
+                        </div>
+
+    			        <!--<div class="emo1">-->
+    			        <!--    <input class="emohappy" type="button" name="happy" value="h">-->
+    			        <!--</div>-->
+    			        <!--<div class="emo2"></div>-->
+    			        <!--<div class="emo3"></div>-->
+    			        <!--<div class="emo4"></div>-->
+    			        <!--<div class="emo5"></div>-->
+			        </div>
 			    </ons-scroller>
-			    <div style="border-top:solid #83A0CA;">
+			        
+			    <div style="border-top:solid #83A0CA;"></div>
                 <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message..."></textarea>
+
                 <ons-button class="button--large" ng-click="send(inputMSG)">Send Message</ons-button>            
             </ons-page>
         </ons-template>
 		<!-- App Structure Code End -->
+		
+		<ons-modal var="connection_modal">
+            <br> Error Connecting to Server!
+            <br> Attempting to reconnect...
+            <br>
+            <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        </ons-modal>
 		
 	</body>
 </html>
