@@ -26,6 +26,32 @@
                     sendMessage(newUsername);
                 };
                 
+                $scope.login = function(loginUsername, loginPassword){
+                    login_attempt_modal.show();
+                    
+                    console.log("ATTEMPTING LOGIN...");
+                    
+                    pubnub.publish({
+                        channel: private_chan,
+                        message: {
+                            "m_type": "user_login",
+                            "uuid": client_uuid,
+                            "username": loginUsername,
+                            "password": loginPassword
+                        },
+                        callback: function(m){
+                            if (m[0] == "1")
+                            {
+                                console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                            }
+                            else
+                            {
+                                console.log("MESSAGE SENT FAILED: " + m);
+                            }
+                        }
+                    });
+                }
+                
                 $scope.promptUser = function(){
                     ons.notification.prompt({
                         title: 'Start Chat',
@@ -217,10 +243,10 @@
                     <h1>Login Page</h1>
                         <ul class="list">
                           <li class="list__item">
-                             <input ng-model="loginUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
+                             <input ng-model="loginUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Username">
                           </li>
                           <li class="list__item">
-                            <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
+                            <input ng-model="loginPassword" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
                           </li>
                         </ul>
                         <!--<div class="login-form">
@@ -231,7 +257,7 @@
                         </div>-->
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
-                            <ons-button class="button--large" ng-click="tempLogin(loginUsername);">Submit</ons-button>            
+                            <ons-button class="button--large" ng-click="login(loginUsername, loginPassword);">Submit</ons-button>            
                         </div>
                     </ons-bottom-toolbar>
                 </div>
@@ -394,55 +420,79 @@
 					<div id="other_username" class="center"></div>
 					<div class="right"></div>
 				</ons-toolbar>
-			    <ons-scroller id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
+			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
 			        <!-- Message transactions -->
-			        <div class="buttons">
+			        <div class="emobuttons">
 			            <div class="button-bar" style="width:100%;">
                           <div class="button-bar__item">
-                            <ons-button modifier="emo1"><ons-ripple></ons-ripple>Red</ons-button>
+                            <ons-button modifier="emo1"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
                           </div>
-                        
                           <div class="button-bar__item">
-                            <ons-button modifier="emo2"><ons-ripple></ons-ripple>Yellow</ons-button>
+                            <ons-button modifier="emo2"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
                           </div>
-                        
                           <div class="button-bar__item">
-                            <ons-button modifier="emo3"><ons-ripple></ons-ripple>Blue</ons-button>
+                            <ons-button modifier="emo3"><ons-icon icon="fa fa-frown-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
                           </div>
-                          
                           <div class="button-bar__item">
-                            <ons-button modifier="emo4"><ons-ripple></ons-ripple>Green</ons-button>
+                            <ons-button modifier="emo4"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
                           </div>
-                          
                           <div class="button-bar__item">
-                            <ons-button modifier="emo5"><ons-ripple></ons-ripple>Orange</ons-button>
+                            <ons-button modifier="emo5"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
                           </div>
                         </div>
-
-    			        <!--<div class="emo1">-->
-    			        <!--    <input class="emohappy" type="button" name="happy" value="h">-->
-    			        <!--</div>-->
-    			        <!--<div class="emo2"></div>-->
-    			        <!--<div class="emo3"></div>-->
-    			        <!--<div class="emo4"></div>-->
-    			        <!--<div class="emo5"></div>-->
 			        </div>
 			    </ons-scroller>
 			        
 			    <div style="border-top:solid #83A0CA;"></div>
-                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message..."></textarea>
+                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message...">
+                    <ons-button ng-click="send(inputMSG)">Send<ons-icon icon="fa fa-chevron-circle-right"></ons-icon></ons-button>
+                </textarea>
 
-                <ons-button class="button--large" ng-click="send(inputMSG)">Send Message</ons-button>            
+                <ons-button class="button--large" ng-click="send(inputMSG)">Send</ons-button>            
             </ons-page>
         </ons-template>
 		<!-- App Structure Code End -->
 		
+		<!-- Modals to display errors -->
+		
+		<!-- Connection Error Modal -->
 		<ons-modal var="connection_modal">
             <br> Error Connecting to Server!
             <br> Attempting to reconnect...
             <br>
+            <br>
             <ons-icon icon="ion-load-c" spin="true"></ons-icon>
         </ons-modal>
-		
+        
+        <!-- Logging in modal -->
+		<ons-modal var="login_attempt_modal">
+            <br> Logging in
+            <br> Please wait...
+            <br>
+            <br>
+            <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        </ons-modal>
+        
+        <!-- Login failed modal -->
+		<ons-modal var="login_failed_modal">
+            <br> Login Failed
+            <br>
+            <br> Please make sure your
+            <br> username and password is correct!
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="login_failed_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Login failed duplicate modal -->
+		<ons-modal var="login_failed_duplicate_modal">
+            <br> Login Failed
+            <br>
+            <br> This account is already logged in
+            <br> on another device. Try again later!
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="login_failed_duplicate_modal.hide()">Okay</ons-button>
+        </ons-modal>
 	</body>
 </html>

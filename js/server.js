@@ -102,6 +102,7 @@ function initialize_app() {
                     pubnub.subscribe({
                         channel: private_chan,
                         callback: function(m) {
+                            console.log(m.m_type);
                             if (m.m_type === "server_shutdown") {
                                 displayError("serverOffline");
                                 serverOnline = false;
@@ -114,10 +115,25 @@ function initialize_app() {
                                     }
                                 });
                             }
-                            else if(m.m_type === "user_login_reply") {
-                                console.log("YOUR USERNAME IS: " + m.username + " | LOGIN SUCCESSFUL");
+                            else if(m.m_type === "user_login_success") {
+                                console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
+                                login_attempt_modal.hide();
+                                tinglrNav.pushPage('main_start.html', {animation : 'fade'});
+                                
+                            }
+                            else if(m.m_type === "user_login_failed") {
+                                console.log("Login Failed!");
+                                loggedIn = false;
+                                login_attempt_modal.hide();
+                                login_failed_modal.show();
+                            }
+                            else if(m.m_type === "user_login_duplicate") {
+                                console.log("Login Failed: Duplicate Login!");
+                                loggedIn = false;
+                                login_attempt_modal.hide();
+                                login_failed_duplicate_modal.show();
                             }
                             else if(m.m_type === "chat_init") {
                                 console.log("INITIATING CHAT!");
@@ -312,11 +328,6 @@ function hideError(error){
 
 //START OF SCRIPT
 initialize_app();
-
-//Login function
-function login(username, password){
-    
-}
 
 //Register function
 function register(firstname, surname, username, password){
