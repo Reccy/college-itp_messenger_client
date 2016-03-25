@@ -156,6 +156,20 @@ function initialize_app() {
                         },
                         connect: function() {
                             console.log("Connected to: " + private_chan);
+                            
+                            //If already logged in, notify server to update channelList
+                            if(loggedIn)
+                            {
+                                console.log("Sending reconnect message to server.");
+                                pubnub.publish({
+                                    channel: private_chan,
+                                    message: {
+                                        "m_type" : "user_login_reconnect",
+                                        "uuid" : client_uuid,
+                                        "username" : client_username
+                                    }
+                                });
+                            }
                         },
                         presence: function(m) {
                             //console.log("Presence event: " + JSON.stringify(m));

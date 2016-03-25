@@ -72,9 +72,34 @@
                     initialize_app();
                 }
             });
-	      	function reset(){
+	      	function logoutPrompt(){
 	      	    menu.closeMenu();
-	      	    tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
+	      	    ons.notification.confirm({
+                    title: 'Logout',
+                    message: 'Are you sure you want to logout?',
+                    callback: function(result) {
+                        if(result === 1)
+                        {
+                            logout();
+                        }
+                    }
+                });
+	        }
+	        
+	        function logout(){
+	            tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
+                var client_username = null;
+                var loggedIn = false;
+                pubnub.publish({
+                    channel: private_chan,
+                    message: {
+                        uuid: client_uuid,
+                        m_type: "user_logout"
+                    },
+                    callback: function() {
+                        console.log("Logged out.");
+                    }
+                });
 	        }
 	        
 	        function displayMessage(sender, msg){
@@ -158,7 +183,7 @@
                 <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
                     Profile
                 </ons-list-item>
-                <ons-list-item modifier="chevron" onclick="reset()">
+                <ons-list-item modifier="chevron" onclick="logoutPrompt()">
                     Logout
                 </ons-list-item>
             </ons-list>
