@@ -46,8 +46,6 @@
                         loginFailed = true;
                     }
                     
-                    console.log(illegals.test(loginUsername));
-                    
                     //Illegal character check
                     if((!illegals.test(loginUsername) || !illegals.test(loginPassword)) && !loginFailed)
                     {
@@ -82,23 +80,52 @@
                 }
                 
                 $scope.register = function(registerUsername, registerPasswordOne, registerPasswordTwo){
-                    
-                    /*
-                    
-                        TODO!
-                        Finish registration input validation!!!
-                    
-                    */
-                    
                     registerFailed = false;
                     illegals = /^[0-9a-zA-Z]+$/;
                     
                     console.log("ATTEMPTING REGISTRATION...");
                     
-                    if(registerPasswordOne != registerPasswordTwo){
-                        register_password_miss_modal.show();
+                    //Blank username check
+                    if(registerUsername == undefined)
+                    {
+                        register_failed_username_blank_modal.show();
+                        registerFailed = true;
                     }
-                    else
+                    //Short username check
+                    else if(registerUsername.length < 4 && !registerFailed)
+                    {
+                        register_failed_username_length_modal.show();
+                        registerFailed = true;
+                    }
+                    
+                    //Blank password check
+                    if(registerPasswordOne == undefined && !registerFailed)
+                    {
+                        register_failed_password_blank_modal.show();
+                        registerFailed = true;
+                    }
+                    //Short password check
+                    else if(registerPasswordOne.length < 6 && !registerFailed)
+                    {
+                        register_failed_password_length_modal.show();
+                        registerFailed = true;
+                    }
+                    
+                    //Mismatched password check
+                    if(registerPasswordOne != registerPasswordTwo && !registerFailed){
+                        register_failed_password_miss_modal.show();
+                        registerFailed = true;
+                    }
+                    
+                    //Illegal character check
+                    if((!illegals.test(registerUsername) || !illegals.test(registerPasswordOne)) && !registerFailed)
+                    {
+                        register_failed_illegals_modal.show();
+                        registerFailed = true;
+                    }
+                    
+                    //If the user's input is verified, continue with the registration attempt
+                    if(!registerFailed)
                     {
                         register_attempt_modal.show();
                         
@@ -616,28 +643,88 @@
         <!-- Register attempt modal -->
 		<ons-modal var="register_attempt_modal">
             <br> Attempting Registration
+            <br>
             <br> Please wait...
             <br>
             <br>
             <ons-icon icon="ion-load-c" spin="true"></ons-icon>
         </ons-modal>
         
-        <!-- Register attempt modal -->
-		<ons-modal var="register_password_miss_modal">
+        <!-- Register password mismatch modal -->
+		<ons-modal var="register_failed_password_miss_modal">
+            <br> Registration Failed
+            <br>
             <br> Please make sure your password 
             <br> is the same in both boxes.
             <br>
             <br>
-            <ons-button class="button--small" ng-click="register_password_miss_modal.hide()">Okay</ons-button>
+            <ons-button class="button--small" ng-click="register_failed_password_miss_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register blank username modal -->
+		<ons-modal var="register_failed_username_blank_modal">
+            <br> Registration Failed
+            <br>
+            <br> Please fill in your username into
+            <br> the username input field.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_username_blank_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register short username modal -->
+		<ons-modal var="register_failed_username_length_modal">
+            <br> Registration Failed
+            <br>
+            <br> Please ensure that your username
+            <br> is at least 4 characters long.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_username_length_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register blank password modal -->
+		<ons-modal var="register_failed_password_blank_modal">
+            <br> Registration Failed
+            <br>
+            <br> Please fill in your password into
+            <br> the password input fields.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_password_blank_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register short password modal -->
+		<ons-modal var="register_failed_password_length_modal">
+            <br> Registration Failed
+            <br>
+            <br> Please ensure that your password
+            <br> is at least 6 characters long.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_password_length_modal.hide()">Okay</ons-button>
         </ons-modal>
         
         <!-- Register attempt modal -->
 		<ons-modal var="register_failed_duplicate_modal">
+            <br> Registration Failed
+            <br>
             <br> A user already exists with this username.
             <br> Please choose a different one.
             <br>
             <br>
             <ons-button class="button--small" ng-click="register_failed_duplicate_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register illegal characters modal -->
+		<ons-modal var="register_failed_illegals_modal">
+            <br> Registration Failed
+            <br>
+            <br> Only use alphanumeric characters
+            <br> in your username and password.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_illegals_modal.hide()">Okay</ons-button>
         </ons-modal>
 	</body>
 </html>
