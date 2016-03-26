@@ -9,6 +9,7 @@ var tempChatStarted = false; //Temp Boolean for the chat start
 var tempChannel; //Temp name of chat channel
 var loggedIn = false; //Bool to check if user is logged in
 var verifyTimeout; //Timeout to verify the server connection
+var verifyLogin; //Timeout to verify the user has reconnected after a disconnect
 
 //PUBNUB object
 var pubnub = PUBNUB({
@@ -74,8 +75,8 @@ function initialize_app() {
             } else {
                 //Verify server's connection
                 verifyTimeout = setTimeout(function() {
-                            verify_server_connection()
-                        }, 5000);
+                    verify_server_connection()
+                }, 5000);
             }
             
             //Connect to the global channel
@@ -176,15 +177,9 @@ function initialize_app() {
                             //If already logged in, notify server to update channelList
                             if(loggedIn)
                             {
-                                console.log("Sending reconnect message to server.");
-                                pubnub.publish({
-                                    channel: private_chan,
-                                    message: {
-                                        "m_type" : "user_login_reconnect",
-                                        "uuid" : client_uuid,
-                                        "username" : client_username
-                                    }
-                                });
+                                verifyLogin = setTimeout(function() {
+                                    verify_login()
+                                }, 2000);
                             }
                         },
                         presence: function(m) {
@@ -196,7 +191,10 @@ function initialize_app() {
                                         callback: function(m) {
                                             console.log("Disconnected from GLOBAL CHANNEL!");
                                             console.log("App Initialized!");
-                                            hideError("serverOffline");
+                                            if(!loggedIn)
+                                            {
+                                                hideError("serverOffline");    
+                                            }
                                             appInitialized = true;
                                         }
                                     });
@@ -312,6 +310,19 @@ function initialize_app() {
             });
         }
     }
+    
+    function verify_login() {
+        console.log("Sending reconnect message to server.");
+        pubnub.publish({
+            channel: private_chan,
+            message: {
+                "m_type" : "user_login_reconnect",
+                "uuid" : client_uuid,
+                "username" : client_username
+            }
+        });
+        hideError("serverOffline");    
+    }
 }
 
 //Display connection errors to the user
@@ -321,6 +332,20 @@ function displayError(error){
         switch(error) {
             case "serverOffline":
                 connection_modal.show();
+                login_attempt_modal.hide();
+                login_failed_modal.hide();
+                login_failed_duplicate_modal.hide();
+                login_failed_username_blank_modal.hide();
+                login_failed_password_blank_modal.hide();
+                login_failed_illegals_modal.hide();
+                register_attempt_modal.hide();
+                register_failed_password_miss_modal.hide();
+                register_failed_username_blank_modal.hide();
+                register_failed_username_length_modal.hide();
+                register_failed_password_blank_modal.hide();
+                register_failed_password_length_modal.hide();
+                register_failed_duplicate_modal.hide();
+                register_failed_illegals_modal.hide();
                 break;
         }    
     } else {
@@ -335,6 +360,7 @@ function displayError(error){
 
 //Hide connection errors from the user
 function hideError(error){
+    console.log("FOOBAR");
     if(appInitialized){
         //Modal
         switch(error) {
