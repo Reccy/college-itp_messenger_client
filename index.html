@@ -52,6 +52,38 @@
                     });
                 }
                 
+                $scope.register = function(registerUsername, registerPasswordOne, registerPasswordTwo){
+                    console.log("ATTEMPTING REGISTRATION...");
+                    
+                    if(registerPasswordOne != registerPasswordTwo){
+                        register_password_miss_modal.show();
+                    }
+                    else
+                    {
+                        register_attempt_modal.show();
+                        
+                        pubnub.publish({
+                            channel: private_chan,
+                            message: {
+                                "m_type": "user_register",
+                                "uuid": client_uuid,
+                                "username": registerUsername,
+                                "password": registerPasswordOne
+                            },
+                            callback: function(m){
+                                if (m[0] == "1")
+                                {
+                                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                                }
+                                else
+                                {
+                                    console.log("MESSAGE SENT FAILED: " + m);
+                                }
+                            }
+                        });
+                    }
+                }
+                
                 $scope.promptUser = function(){
                     ons.notification.prompt({
                         title: 'Start Chat',
@@ -303,25 +335,13 @@
                     <h1>Register Page</h1>
                         <ul class="list">
                           <li class="list__item">
-                            <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="First Name">
+                            <input ng-model="registerUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Username">
+                          </li>                          
+                          <li class="list__item">
+                            <input ng-model="registerPasswordOne" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
                           </li>
                           <li class="list__item">
-                            <input type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Surname">
-                          </li>                          
-                          <li class="list__item">
-                            <input type="date" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="DOB">
-                          </li>                          
-                          <li class="list__item">
-                            <input ng-model="registerUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="User Name">
-                          </li>                          
-                          <li class="list__item">
-                            <input type="email" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Email">
-                          </li>                          
-                          <li class="list__item">
-                            <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
-                          </li>
-                          <li class="list__item">
-                            <input type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Confirm Password">
+                            <input ng_model="registerPasswordTwo" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Confirm Password">
                           </li>
                         </ul>
                         <!--<div class="register-form">
@@ -336,7 +356,7 @@
                         </ons-bottom-toolbar>
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
-                            <ons-button class="button--large" ng-click="tempLogin(registerUsername);">Register</ons-button>            
+                            <ons-button class="button--large" ng-click="register(registerUsername,registerPasswordOne,registerPasswordTwo);">Register</ons-button>            
                         </div>
                     </ons-bottom-toolbar>
                 </div>
@@ -450,19 +470,19 @@
 			        <div class="emobuttons">
 			            <div class="button-bar" style="width:100%;">
                           <div class="button-bar__item">
-                            <ons-button modifier="emo1"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
+                            <ons-button modifier="emo1"><img src="images/joy_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                           <div class="button-bar__item">
-                            <ons-button modifier="emo2"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
+                            <ons-button modifier="emo2"><img src="images/anger_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                           <div class="button-bar__item">
-                            <ons-button modifier="emo3"><ons-icon icon="fa fa-frown-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
+                            <ons-button modifier="emo3"><img src="images/disgust_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                           <div class="button-bar__item">
-                            <ons-button modifier="emo4"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
+                            <ons-button modifier="emo4"><img src="images/sad_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                           <div class="button-bar__item">
-                            <ons-button modifier="emo5"><ons-icon icon="fa fa-smile-o" size="50px" fixed-width="false" style="color: green;"></ons-icon></ons-button>
+                            <ons-button modifier="emo5"><img src="images/fear_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                         </div>
 			        </div>
@@ -470,7 +490,7 @@
 			        
 			    <div style="border-top:solid #83A0CA;"></div>
                 <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message...">
-                    <ons-button ng-click="send(inputMSG)">Send<ons-icon icon="fa fa-chevron-circle-right"></ons-icon></ons-button>
+                    
                 </textarea>
 
                 <ons-button class="button--large" ng-click="send(inputMSG)">Send</ons-button>            
@@ -518,6 +538,33 @@
             <br>
             <br>
             <ons-button class="button--small" ng-click="login_failed_duplicate_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register attempt modal -->
+		<ons-modal var="register_attempt_modal">
+            <br> Attempting Registration
+            <br> Please wait...
+            <br>
+            <br>
+            <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        </ons-modal>
+        
+        <!-- Register attempt modal -->
+		<ons-modal var="register_password_miss_modal">
+            <br> Please make sure your password 
+            <br> is the same in both boxes.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_password_miss_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Register attempt modal -->
+		<ons-modal var="register_failed_duplicate_modal">
+            <br> A user already exists with this username.
+            <br> Please choose a different one.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="register_failed_duplicate_modal.hide()">Okay</ons-button>
         </ons-modal>
 	</body>
 </html>

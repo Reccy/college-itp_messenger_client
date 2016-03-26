@@ -135,6 +135,19 @@ function initialize_app() {
                                 login_attempt_modal.hide();
                                 login_failed_duplicate_modal.show();
                             }
+                            else if(m.m_type === "user_register_success") {
+                                console.log("Registration Successful!");
+                                loggedIn = true;
+                                client_username = m.username;
+                                register_attempt_modal.hide();
+                                tinglrNav.pushPage("main_start.html", {animation : 'fade'});
+                            }
+                            else if(m.m_type === "user_register_duplicate") {
+                                console.log("Registration Failed: Duplicate User!");
+                                loggedIn = false;
+                                register_attempt_modal.hide();
+                                register_failed_duplicate_modal.show();
+                            }
                             else if(m.m_type === "chat_init") {
                                 console.log("INITIATING CHAT!");
                                 $("#other_username").html(m.sender);

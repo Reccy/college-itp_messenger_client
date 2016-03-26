@@ -4047,7 +4047,6 @@ input[type=email], input[type=password] {
   position:relative;
   float:left;
   background-color:red;
-  background-image: url('images/anger_white.png');
   width: 100%;
   height: 20%;
 }
@@ -4055,7 +4054,7 @@ input[type=email], input[type=password] {
 .button--emo3{
   position:relative;
   float:left;
-  background-color:blue;
+  background-color:green;
   width: 100%;
   height: 20%;
 }
@@ -4063,7 +4062,7 @@ input[type=email], input[type=password] {
 .button--emo4{
   position:relative;
   float:left;
-  background-color:green;
+  background-color:blue;
   width: 100%;
   height: 20%;
 }
@@ -4071,7 +4070,7 @@ input[type=email], input[type=password] {
 .button--emo5{
   position:relative;
   float:left;
-  background-color:orange;
+  background-color:purple;
   width: 100%;
   height: 20%;
 }
@@ -4086,3 +4085,4 @@ input[type=email], input[type=password] {
   bottom: 0;
   width: 100%;
 }
+
