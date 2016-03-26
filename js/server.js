@@ -16,7 +16,7 @@ var pubnub = PUBNUB({
     subscribe_key: 'sub-c-a91c35f6-ca98-11e5-a9b2-02ee2ddab7fe',
     publish_key: 'pub-c-0932089b-8fc7-4329-b03d-7c47fe828971',
     uuid: client_uuid,
-    heartbeat: 30
+    heartbeat: 10
 });
 
 //Debug console log
@@ -126,12 +126,14 @@ function initialize_app() {
                             else if(m.m_type === "user_login_failed") {
                                 console.log("Login Failed!");
                                 loggedIn = false;
+                                client_username = null;
                                 login_attempt_modal.hide();
                                 login_failed_modal.show();
                             }
                             else if(m.m_type === "user_login_duplicate") {
                                 console.log("Login Failed: Duplicate Login!");
                                 loggedIn = false;
+                                client_username = null;
                                 login_attempt_modal.hide();
                                 login_failed_duplicate_modal.show();
                             }
@@ -145,6 +147,7 @@ function initialize_app() {
                             else if(m.m_type === "user_register_duplicate") {
                                 console.log("Registration Failed: Duplicate User!");
                                 loggedIn = false;
+                                client_username = null;
                                 register_attempt_modal.hide();
                                 register_failed_duplicate_modal.show();
                             }

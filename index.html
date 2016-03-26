@@ -27,32 +27,72 @@
                 };
                 
                 $scope.login = function(loginUsername, loginPassword){
-                    login_attempt_modal.show();
+                    loginFailed = false;
+                    illegals = /^[0-9a-zA-Z]+$/;
                     
                     console.log("ATTEMPTING LOGIN...");
                     
-                    pubnub.publish({
+                    //Blank username check
+                    if(loginUsername == undefined)
+                    {
+                        login_failed_username_blank_modal.show();
+                        loginFailed = true;
+                    }
+                    
+                    //Blank password check
+                    if(loginPassword == undefined && !loginFailed)
+                    {
+                        login_failed_password_blank_modal.show();
+                        loginFailed = true;
+                    }
+                    
+                    console.log(illegals.test(loginUsername));
+                    
+                    //Illegal character check
+                    if((!illegals.test(loginUsername) || !illegals.test(loginPassword)) && !loginFailed)
+                    {
+                        login_failed_illegals_modal.show();
+                        loginFailed = true;
+                    }
+                    
+                    //Send login request if other checks passed
+                    if(!loginFailed){
+                        login_attempt_modal.show();
+                        
+                        pubnub.publish({
                         channel: private_chan,
-                        message: {
-                            "m_type": "user_login",
-                            "uuid": client_uuid,
-                            "username": loginUsername,
-                            "password": loginPassword
-                        },
-                        callback: function(m){
-                            if (m[0] == "1")
-                            {
-                                console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                            message: {
+                                "m_type": "user_login",
+                                "uuid": client_uuid,
+                                "username": loginUsername,
+                                "password": loginPassword
+                            },
+                            callback: function(m){
+                                if (m[0] == "1")
+                                {
+                                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+                                }
+                                else
+                                {
+                                    console.log("MESSAGE SENT FAILED: " + m);
+                                }
                             }
-                            else
-                            {
-                                console.log("MESSAGE SENT FAILED: " + m);
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
                 
                 $scope.register = function(registerUsername, registerPasswordOne, registerPasswordTwo){
+                    
+                    /*
+                    
+                        TODO!
+                        Finish registration input validation!!!
+                    
+                    */
+                    
+                    registerFailed = false;
+                    illegals = /^[0-9a-zA-Z]+$/;
+                    
                     console.log("ATTEMPTING REGISTRATION...");
                     
                     if(registerPasswordOne != registerPasswordTwo){
@@ -120,8 +160,8 @@
 	        
 	        function logout(){
 	            tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
-                var client_username = null;
-                var loggedIn = false;
+                client_username = null;
+                loggedIn = false;
                 pubnub.publish({
                     channel: private_chan,
                     message: {
@@ -538,6 +578,39 @@
             <br>
             <br>
             <ons-button class="button--small" ng-click="login_failed_duplicate_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Login failed blank username -->
+		<ons-modal var="login_failed_username_blank_modal">
+            <br> Login Failed
+            <br>
+            <br> Please don't leave the
+            <br> username field blank.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="login_failed_username_blank_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Login failed blank password -->
+		<ons-modal var="login_failed_password_blank_modal">
+            <br> Login Failed
+            <br>
+            <br> Please don't leave the
+            <br> password field blank.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="login_failed_password_blank_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Login failed illegal characters -->
+		<ons-modal var="login_failed_illegals_modal">
+            <br> Login Failed
+            <br>
+            <br> Only use alphanumeric characters
+            <br> in your username and password.
+            <br>
+            <br>
+            <ons-button class="button--small" ng-click="login_failed_illegals_modal.hide()">Okay</ons-button>
         </ons-modal>
         
         <!-- Register attempt modal -->
