@@ -1,6 +1,7 @@
 // Global variables
 var global_chan = "chan_global"; //Global channel name
 var private_chan = ""; //Private channel name
+var db_chan = "chan_database";
 var client_uuid = PUBNUB.uuid(); //Temporary UUID
 var client_username = null; //Client's username
 var serverOnline = false; //Boolean for the server's status
@@ -10,6 +11,7 @@ var tempChannel; //Temp name of chat channel
 var loggedIn = false; //Bool to check if user is logged in
 var verifyTimeout; //Timeout to verify the server connection
 var verifyLogin; //Timeout to verify the user has reconnected after a disconnect
+var userlist = []; //List of users from the database
 
 //PUBNUB object
 var pubnub = PUBNUB({
@@ -321,7 +323,6 @@ function initialize_app() {
                 "username" : client_username
             }
         });
-        hideError("serverOffline");    
     }
 }
 
@@ -360,7 +361,6 @@ function displayError(error){
 
 //Hide connection errors from the user
 function hideError(error){
-    console.log("FOOBAR");
     if(appInitialized){
         //Modal
         switch(error) {
@@ -383,12 +383,38 @@ function hideError(error){
 /******************************/
 
 //START OF SCRIPT
-initialize_app();
 
-//Register function
-function register(firstname, surname, username, password){
-    
-}
+//Connect to user database and update userlist
+pubnub.history({
+     channel: db_chan,
+     callback: function(m){
+         if(m[0][0].m_type == "db_results"){
+            userlist.length = 0;
+            for(i = 0; i < m[0][0].usernames.length; i++){
+                userlist.push(m[0][0].usernames[i]);
+            }
+        }
+     },
+     count: 1,
+     reverse: false
+});
+
+pubnub.subscribe({
+    channel: db_chan,
+    callback: function(m){
+        if(m.m_type == "db_results"){
+            userlist.length = 0;
+            for(i = 0; i < m.usernames.length; i++){
+                userlist.push(m.usernames[i]);
+            }
+        }
+    }
+});
+
+
+
+//Start App
+initialize_app();
 
 /* REAL SEND MESSAGE FUNCTION
 sendMessage(important data){
