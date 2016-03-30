@@ -151,6 +151,7 @@
                     }
                 }
                 
+                //Remove ?
                 $scope.promptUser = function(){
                     ons.notification.prompt({
                         title: 'Start Chat',
@@ -161,14 +162,52 @@
                     });
                 }
                 
+                //Remove?
                 $scope.send = function(msg){
                     sendMessage(msg);
                     $scope.inputMSG = '';
                 }
                 
+                //Reconnects to the server after a disconnect
                 $scope.reconnect = function(){
                     console.log("Reconnecting...");
                     initialize_app();
+                }
+                
+                //Searched for other users in the userlist - search.html
+                $scope.searchOtherUsers = function(query){
+                    console.log("Query: " + query);
+                    
+                    filteredList = [];
+                    
+                    if(/\S/.test(query))
+                    {
+                        for(i = 0; i < userlist.length; i++){
+                            if(userlist[i].search(query) !== -1){
+                                filteredList.push(userlist[i]);
+                            }
+                        }
+                        
+                        console.log(filteredList);
+                        
+                        $("#search_list").html("");
+                        if(filteredList.length > 0)
+                        {
+                            for(i = 0; i < filteredList.length; i++){
+                                $("#search_list").html($("#search_list").html() + "<ons-list-item class='list__item ons-list-item-inner' modifier='tappable'>" + filteredList[i] + "</ons-list-item>");
+                            }
+                        }
+                        else
+                        {
+                            //No results found
+                            $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
+                        }
+                    }
+                    else
+                    {
+                        console.log("boop");
+                        $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
+                    }
                 }
             });
 	      	function logoutPrompt(){
@@ -481,7 +520,7 @@
         
         <!--  Template to search for other user -->
         <ons-template id="search.html">
-            <ons-page>
+            <ons-page ng-controller="PageController">
             	<ons-toolbar>
 					<div class="left">
 						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
@@ -491,30 +530,11 @@
 					<div class="center">Search</div>
 					<div class="right"></div>
 				</ons-toolbar>
-				<input type="search" class="search-input" placeholder="Search...">
+				<input ng-model="search_query" ng-change="searchOtherUsers(search_query);" type="search" class="search-input" placeholder="Search...">
 				
 				<ons-scroller>
-                  <ons-list>
-                    <ons-list-item modifier="tappable">User 1</ons-list-item>
-                    <ons-list-item modifier="tappable">User 2</ons-list-item>
-                    <ons-list-item modifier="tappable">User 3</ons-list-item>
-                    <ons-list-item modifier="tappable">User 4</ons-list-item>
-                    <ons-list-item modifier="tappable">User 5</ons-list-item>
-                    <ons-list-item modifier="tappable">User 6</ons-list-item>
-                    <ons-list-item modifier="tappable">User 7</ons-list-item>
-                    <ons-list-item modifier="tappable">User 8</ons-list-item>
-                    <ons-list-item modifier="tappable">User 9</ons-list-item>
-                    <ons-list-item modifier="tappable">User 10</ons-list-item>
-                    <ons-list-item modifier="tappable">User 11</ons-list-item>
-                    <ons-list-item modifier="tappable">User 12</ons-list-item>
-                    <ons-list-item modifier="tappable">User 13</ons-list-item>
-                    <ons-list-item modifier="tappable">User 14</ons-list-item>
-                    <ons-list-item modifier="tappable">User 15</ons-list-item>
-                    <ons-list-item modifier="tappable">User 16</ons-list-item>
-                    <ons-list-item modifier="tappable">User 17</ons-list-item>
-                    <ons-list-item modifier="tappable">User 18</ons-list-item>
-                    <ons-list-item modifier="tappable">User 19</ons-list-item>
-                    <ons-list-item modifier="tappable">User 20</ons-list-item>
+                  <ons-list id="search_list">
+                    <ons-list-item>No Results</ons-list-item>
                   </ons-list>
                 </ons-scroller>
             </ons-page>
