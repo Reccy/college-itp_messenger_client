@@ -416,6 +416,21 @@ pubnub.subscribe({
 //Start App
 initialize_app();
 
+//Prompt the user if they want to connect to another new user
+function promptConnectOther(user){
+    ons.notification.confirm({
+        title: 'Start New Chat',
+        message: 'Do you want to start a new chat with ' + user + '?',
+        callback: function(result) {
+            if(result === 1)
+            {
+                //Start chat with new user
+                console.log("Starting chat with " + user + "..?");
+            }
+        }
+    });
+}
+
 /* REAL SEND MESSAGE FUNCTION
 sendMessage(important data){
     

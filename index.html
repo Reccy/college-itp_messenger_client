@@ -176,25 +176,25 @@
                 
                 //Searched for other users in the userlist - search.html
                 $scope.searchOtherUsers = function(query){
-                    console.log("Query: " + query);
+                    query = query.toLowerCase();
                     
                     filteredList = [];
                     
                     if(/\S/.test(query))
                     {
                         for(i = 0; i < userlist.length; i++){
-                            if(userlist[i].search(query) !== -1){
-                                filteredList.push(userlist[i]);
+                            if(userlist[i].toLowerCase().search(query) !== -1){
+                                if(userlist[i] !== client_username){
+                                    filteredList.push(userlist[i]);    
+                                }
                             }
                         }
-                        
-                        console.log(filteredList);
                         
                         $("#search_list").html("");
                         if(filteredList.length > 0)
                         {
                             for(i = 0; i < filteredList.length; i++){
-                                $("#search_list").html($("#search_list").html() + "<ons-list-item class='list__item ons-list-item-inner' modifier='tappable'>" + filteredList[i] + "</ons-list-item>");
+                                $("#search_list").html($("#search_list").html() + "<ons-list-item class='list__item ons-list-item-inner list__item--chevron' modifier='chevron' onclick='promptConnectOther($(this).html());'>" + filteredList[i] + "</ons-list-item>");
                             }
                         }
                         else
@@ -205,7 +205,6 @@
                     }
                     else
                     {
-                        console.log("boop");
                         $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
                     }
                 }
@@ -534,7 +533,7 @@
 				
 				<ons-scroller>
                   <ons-list id="search_list">
-                    <ons-list-item>No Results</ons-list-item>
+                        <ons-list-item>No Results</ons-list-item>
                   </ons-list>
                 </ons-scroller>
             </ons-page>
