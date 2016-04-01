@@ -240,6 +240,24 @@
                 tinglrNav.on("postpush", function(){
                     $("#other_username").html(user);
                     
+                    for(i = 0; i < Object.keys(channellist).length; i++){
+                        if(currentConversation === channellist[i].username){
+                            currentChannel = channellist[i].channel;
+                        }
+                    }
+                    
+                    pubnub.history({
+                        channel: currentChannel,
+                        callback: function(m){
+                            for(i = 0; i < m[0].length; i++)
+                            {
+                                displayMessage(m[0][i].sender, m[0][i].text);
+                            }
+                        },
+                        count: 50,
+                        reverse: false
+                    });
+                    
                     //Remove event handler to prevent memory leak
                     tinglrNav.off("postpush", function(){
                         console.log("Removed Handler");
@@ -299,17 +317,6 @@
 	            margin-left:10px;
 	        }
 	        
-	        .msgBoxLeft{
-	            width: 100%;
-                height: 100%;
-                background: red;
-                position: relative;
-                -moz-border-radius:    10px;
-                -webkit-border-radius: 10px;
-                border-radius:         10px;
-
-	        }
-	        
 	        .msgBoxLeft > p{
 	            float:left;
 	            color:white;
@@ -332,9 +339,11 @@
 	            padding:5px;
 	            max-width:60%;
 	            word-wrap:break-word;
-	            animation: pulse 5s infinite;
 	        }
-	        
+            
+            /* Custom Emotion CSS */
+	    
+	        /*
 	        @keyframes pulse {
                   0% {
                         background-color: #001F3F;
@@ -343,6 +352,22 @@
                        background-color: #FF4136;
                     }
             }
+            
+            animation: pulse 5s infinite;
+            */
+            
+            /*
+	        .msgBoxLeft{
+	            width: 100%;
+                height: 100%;
+                background: red;
+                position: relative;
+                -moz-border-radius:    10px;
+                -webkit-border-radius: 10px;
+                border-radius:         10px;
+
+	        }
+	        */
 	    </style>
 	</head>
 	
@@ -591,7 +616,7 @@
 				</ons-toolbar>
 			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
 			        <!-- Message transactions -->
-			        <div class="emobuttons">
+			        <!--<div class="emobuttons">
 			            <div class="button-bar" style="width:100%;">
                           <div class="button-bar__item">
                             <ons-button modifier="emo1"><img src="images/joy_white.png" style="margin:auto; width: 100%;"></ons-button>
@@ -609,7 +634,7 @@
                             <ons-button modifier="emo5"><img src="images/fear_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
                         </div>
-			        </div>
+			        </div>-->
 			    </ons-scroller>
 			        
 			    <div style="border-top:solid #83A0CA;"></div>

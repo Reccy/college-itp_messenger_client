@@ -14,6 +14,8 @@ var verifyLogin; //Timeout to verify the user has reconnected after a disconnect
 var userlist = []; //List of users from the database
 var channellist = []; //List of connected channels
 var currentConversation = null; //The name of the other user that the current user is talking with
+var currentChannel = null; //The id of the channel that is currently being communicated on
+var historyChannel = null; //The channel used to store the channellist between sessions
 
 //PUBNUB object
 var pubnub = PUBNUB({
@@ -124,9 +126,49 @@ function initialize_app() {
                                 console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
-                                login_attempt_modal.hide();
-                                tinglrNav.pushPage('main_start.html', {animation : 'fade'});
-                                
+                                historyChannel = m.username + "_historyChannel";
+
+                                pubnub.history({
+                                    channel: historyChannel,
+                                    callback: function(m){
+                                        if(m[0][0] !== undefined){
+                                            channellist = m[0][0];
+                                        }
+                                        
+                                        console.log(Object.keys(channellist).length);
+                                        for(i = 0; i < Object.keys(channellist).length; i++)
+                                        {
+                                            //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "CHAT_INIT" SECTION ASWELL!!!
+                                            console.log("Starting new chat with: " + channellist[i].username);
+                                            
+                                            //Subscribe to the new user channel
+                                            pubnub.subscribe({
+                                                channel: channellist[i].channel,
+                                                connect: function(){
+                                                    console.log("Chat started with: " + channellist[i].username);
+                                                },
+                                                callback: function(m) {
+                                                    console.log(m);
+                                                    if(m.m_type === "chat_message")
+                                                    {
+                                                        displayMessage(m.sender, m.text);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        
+                                        login_attempt_modal.hide();
+                                        tinglrNav.pushPage('main_start.html', {animation : 'fade'});
+                                        tinglrNav.on('postpush',function(){
+                                            populateMainJS();
+                                            tinglrNav.off('postpush',function(){
+                                                console.log("Removed Handler");
+                                            });
+                                        });
+                                    },
+                                    count: 1,
+                                    reverse: false
+                                });
                             }
                             else if(m.m_type === "user_login_failed") {
                                 console.log("Login Failed!");
@@ -157,6 +199,7 @@ function initialize_app() {
                                 register_failed_duplicate_modal.show();
                             }
                             else if(m.m_type === "chat_init") {
+                                //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "LOGIN" SECTION ASWELL!!!
                                 console.log("Starting new chat with: " + m.username);
                                 
                                 //Subscribe to the new user channel
@@ -174,12 +217,22 @@ function initialize_app() {
                                             "channel" : m.channel
                                         });
                                         
-                                        populateMainJS();
-                                    },
-                                    callback: function() {
+                                        pubnub.publish({
+                                            channel: historyChannel,
+                                            message: channellist,
+                                            callback: function(){
+                                                console.log("Channel List updated!");
+                                            }
+                                        });
                                         
+                                    },
+                                    callback: function(m) {
+                                        console.log(m);
+                                        if(m.m_type === "chat_message")
+                                        {
+                                            displayMessage(m.sender, m.text);
+                                        }
                                     }
-                                    
                                 });
                                 
                                 /*$("#other_username").html(m.sender);
@@ -473,13 +526,33 @@ function startNewChat(user){
     });
 }
 
-/* REAL SEND MESSAGE FUNCTION
-sendMessage(important data){
+function sendMessage(text, emotion){
+    msg = {
+        "m_type": "chat_message",
+        "sender": client_username,
+        "text": text,
+        "emotion" : emotion
+    }
     
+    pubnub.publish({
+        channel: currentChannel,
+        message: msg,
+        callback: function(m){
+            if (m[0] == "1")
+            {
+                console.log("MESSAGE SENT SUCCESSFULLY: " + m);
+            }
+            else
+            {
+                console.log("MESSAGE SENT FAILED: " + m);
+            }
+        }
+    });
 }
-*/
 
 //TEMPORARY CODE FOR USER'S INPUT
+//Old code from prototype
+/*
 function sendMessage(data){
     if(!serverOnline)
     {
@@ -560,4 +633,4 @@ function sendMessage(data){
             }
         })
     }
-};
+};*/
