@@ -155,8 +155,21 @@ function initialize_app() {
                                 register_failed_duplicate_modal.show();
                             }
                             else if(m.m_type === "chat_init") {
-                                console.log("INITIATING CHAT!");
-                                $("#other_username").html(m.sender);
+                                console.log("Starting new chat with: " + m.username);
+                                
+                                //Subscribe to the new user channel
+                                pubnub.subscribe({
+                                    channel: m.channel,
+                                    connect: function(n) {
+                                        console.log("Chat started with: " + m.username);
+                                    },
+                                    callback: function() {
+                                        
+                                    }
+                                    
+                                });
+                                
+                                /*$("#other_username").html(m.sender);
                                 pubnub.subscribe({
                                     channel: m.channel,
                                     connect: function() {
@@ -170,7 +183,7 @@ function initialize_app() {
                                             displayMessage(m.sender, m.contents);
                                         }
                                     }
-                                })
+                                })*/
                             }
                         },
                         connect: function() {
@@ -426,7 +439,20 @@ function promptConnectOther(user){
             {
                 //Start chat with new user
                 console.log("Starting chat with " + user + "..?");
+                startNewChat(user);
             }
+        }
+    });
+}
+
+//Start new chat with other user, by sending message to server
+function startNewChat(user){
+    pubnub.publish({
+        channel: private_chan,
+        message: {
+            "m_type" : "chat_start",
+            "uuid" : client_uuid,
+            "usernames" : [client_username, user]
         }
     });
 }
