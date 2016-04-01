@@ -283,6 +283,7 @@
 	            tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
                 client_username = null;
                 loggedIn = false;
+                channellist = [];
                 pubnub.publish({
                     channel: private_chan,
                     message: {

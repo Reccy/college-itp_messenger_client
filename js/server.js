@@ -126,7 +126,7 @@ function initialize_app() {
                                 console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
-                                historyChannel = m.username + "_historyChannel";
+                                historyChannel = m.username + "_historyChan";
 
                                 pubnub.history({
                                     channel: historyChannel,
@@ -145,7 +145,7 @@ function initialize_app() {
                                             pubnub.subscribe({
                                                 channel: channellist[i].channel,
                                                 connect: function(){
-                                                    console.log("Chat started with: " + channellist[i].username);
+                                                    //console.log("Chat started with: " + channellist[i].username);
                                                 },
                                                 callback: function(m) {
                                                     console.log(m);
@@ -224,7 +224,7 @@ function initialize_app() {
                                                 console.log("Channel List updated!");
                                             }
                                         });
-                                        
+                                        populateMainJS();
                                     },
                                     callback: function(m) {
                                         console.log(m);
