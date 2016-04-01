@@ -12,6 +12,8 @@ var loggedIn = false; //Bool to check if user is logged in
 var verifyTimeout; //Timeout to verify the server connection
 var verifyLogin; //Timeout to verify the user has reconnected after a disconnect
 var userlist = []; //List of users from the database
+var channellist = []; //List of connected channels
+var currentConversation = null; //The name of the other user that the current user is talking with
 
 //PUBNUB object
 var pubnub = PUBNUB({
@@ -160,8 +162,19 @@ function initialize_app() {
                                 //Subscribe to the new user channel
                                 pubnub.subscribe({
                                     channel: m.channel,
-                                    connect: function(n) {
+                                    connect: function(n) { 
                                         console.log("Chat started with: " + m.username);
+                                        
+                                        ons.notification.alert({
+                                            message: "Chat started with " + m.username
+                                        });
+                                        
+                                        channellist.push({
+                                            "username" : m.username,
+                                            "channel" : m.channel
+                                        });
+                                        
+                                        populateMainJS();
                                     },
                                     callback: function() {
                                         
@@ -184,6 +197,9 @@ function initialize_app() {
                                         }
                                     }
                                 })*/
+                            } else {
+                                //Unknown m_type received
+                                console.log("Unknown Message Type - Ignoring Message");
                             }
                         },
                         connect: function() {

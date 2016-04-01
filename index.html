@@ -17,14 +17,8 @@
 	    <script>
 			var module = ons.bootstrap('my-app', ['onsen']);
 			module.controller('AppController', function($scope) {});
-    	    module.controller('PageController', function($scope) {
+    	    module.controller('PageController', function($scope, $timeout) {
                 ons.ready(function() {});
-
-                $scope.tempLogin = function(newUsername){
-                    tinglrNav.pushPage('main_start.html', {animation : 'fade'});
-                    $scope.username = newUsername;
-                    sendMessage(newUsername);
-                };
                 
                 $scope.login = function(loginUsername, loginPassword){
                     loginFailed = false;
@@ -153,13 +147,13 @@
                 
                 //Remove ?
                 $scope.promptUser = function(){
-                    ons.notification.prompt({
+                    /*ons.notification.prompt({
                         title: 'Start Chat',
                         message: 'Who do you want to connect to?',
                         callback: function(otherUser) {
                             sendMessage(otherUser);
                         }
-                    });
+                    });*/
                 }
                 
                 //Remove?
@@ -208,7 +202,51 @@
                         $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
                     }
                 }
+                
+                $scope.populateMain = function(){
+                    console.log("Populate Main! -- AngularJS");
+                    var arbitraryTimeoutBecauseAngularJSIsAwefulAndIHateIt = $timeout(function() {
+                        console.log("JSON LENGTH: " + Object.keys(channellist).length);
+                        if(Object.keys(channellist).length > 0){
+                            $("#connected_user_list").html("");
+                            for(i = 0; i < Object.keys(channellist).length; i++){
+                                $("#connected_user_list").html($("#connected_user_list").html() + "<ons-list-item class='list__item ons-list-item-inner list__item--chevron' modifier='chevron' onclick='openChat($(this).html())'>" + channellist[i].username + "</ons-list-item>");
+                            }
+                        } else {
+                            $("#connected_user_list").html("<ons-list-item class='list__item ons-list-item-inner'>You Have No Friends</ons-list-item>");
+                        }
+                    }, 1)
+                }
             });
+            
+            function populateMainJS(){
+                console.log("Populate Main! -- JavaScript");
+                console.log("JSON LENGTH: " + Object.keys(channellist).length);
+                if(Object.keys(channellist).length > 0){
+                    $("#connected_user_list").html("");
+                    for(i = 0; i < Object.keys(channellist).length; i++){
+                        $("#connected_user_list").html($("#connected_user_list").html() + "<ons-list-item class='list__item ons-list-item-inner list__item--chevron' modifier='chevron' onclick='openChat($(this).html())'>" + channellist[i].username + "</ons-list-item>");
+                    }
+                } else {
+                    $("#connected_user_list").html("<ons-list-item class='list__item ons-list-item-inner'>You Have No Friends</ons-list-item>");
+                }
+            }
+            
+            function openChat(user)
+            {
+                currentConversation = user;
+                console.log("OPENING CHAT WITH: " + user);
+                tinglrNav.pushPage('conversation.html', {animation : 'lift'})
+                tinglrNav.on("postpush", function(){
+                    $("#other_username").html(user);
+                    
+                    //Remove event handler to prevent memory leak
+                    tinglrNav.off("postpush", function(){
+                        console.log("Removed Handler");
+                    })
+                });
+            }
+            
 	      	function logoutPrompt(){
 	      	    menu.closeMenu();
 	      	    ons.notification.confirm({
@@ -314,7 +352,7 @@
         
         <ons-template id="menu.html">
             <ons-list>
-                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true})">
+                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true});">
                     Conversations
                 </ons-list-item>
                 <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
@@ -470,7 +508,7 @@
         
         <!-- Main Pages -->
         <ons-template id="main_start.html">
-            <ons-page>
+            <ons-page ng-controller="PageController" ng-init="populateMain();">
             	<ons-toolbar>
 					<div class="left">
 						<ons-toolbar-button ng-click="menu.toggleMenu()">
@@ -485,10 +523,10 @@
 					</div>
 				</ons-toolbar>
 				<ons-scroller>
-                  <ons-list>
-                    <ons-list-header>Connected Friends</ons-list-header>
-                    <ons-list-item modifier="chevron" ng-click="tinglrNav.pushPage('conversation.html', {animation : 'lift'})">Demo User</ons-list-item>
-                  </ons-list>
+                    <ons-list id="connected_user_list">
+                        <ons-list-header>Connected Friends</ons-list-header>
+                        <ons-list-item modifier="chevron" ng-click="tinglrNav.pushPage('conversation.html', {animation : 'lift'})">Demo User</ons-list-item>
+                    </ons-list>
                 </ons-scroller>
             </ons-page>
         </ons-template>
@@ -522,7 +560,7 @@
             <ons-page ng-controller="PageController">
             	<ons-toolbar>
 					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
+						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'}); populateMain();">
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
@@ -544,7 +582,7 @@
             <ons-page ng-controller="PageController" ng-init="promptUser();">
                 <ons-toolbar>
 					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'})">
+						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'}); populateMain();">
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
