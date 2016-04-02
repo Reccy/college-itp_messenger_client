@@ -174,15 +174,30 @@
                     
                     filteredList = [];
                     
-                    if(/\S/.test(query))
+                    if(/\S/.test(query)) //Checks query to make sure it contains alphanumeric characters
                     {
+                        //Adds filtered people to the list
                         for(i = 0; i < userlist.length; i++){
                             if(userlist[i].toLowerCase().search(query) !== -1){
                                 if(userlist[i] !== client_username){
-                                    filteredList.push(userlist[i]);    
+                                    isAlreadyFriend = false;
+                                    for(j = 0; j < channellist.length; j++)
+                                    {
+                                        if(userlist[i] === channellist[j].username)
+                                        {
+                                            isAlreadyFriend = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!isAlreadyFriend)
+                                    {
+                                        filteredList.push(userlist[i]);        
+                                    }
                                 }
                             }
                         }
+                        
+                        
                         
                         $("#search_list").html("");
                         if(filteredList.length > 0)
@@ -205,7 +220,7 @@
                 
                 $scope.populateMain = function(){
                     console.log("Populate Main! -- AngularJS");
-                    var arbitraryTimeoutBecauseAngularJSIsAwefulAndIHateIt = $timeout(function() {
+                    var arbitraryTimeoutBecauseAngularJSIsAwefulAndIHateItAndApparantlyOneMillisecondFixesThisBug = $timeout(function() {
                         console.log("JSON LENGTH: " + Object.keys(channellist).length);
                         if(Object.keys(channellist).length > 0){
                             $("#connected_user_list").html("");

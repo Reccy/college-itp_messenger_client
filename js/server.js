@@ -127,10 +127,11 @@ function initialize_app() {
                                 loggedIn = true;
                                 client_username = m.username;
                                 historyChannel = m.username + "_historyChan";
-
+                                
                                 pubnub.history({
                                     channel: historyChannel,
                                     callback: function(m){
+                                        
                                         if(m[0][0] !== undefined){
                                             channellist = m[0][0];
                                         }
@@ -208,6 +209,8 @@ function initialize_app() {
                                     connect: function(n) { 
                                         console.log("Chat started with: " + m.username);
                                         
+                                        
+                                        
                                         ons.notification.alert({
                                             message: "Chat started with " + m.username
                                         });
@@ -216,6 +219,29 @@ function initialize_app() {
                                             "username" : m.username,
                                             "channel" : m.channel
                                         });
+                                        
+                                        if(tinglrNav.getCurrentPage().page === "search.html")
+                                        {
+                                            //Removes new friend from the search list
+                                            rem = filteredList.indexOf(m.username);
+                                            if(rem != -1) {
+                                            	filteredList.splice(rem, 1);
+                                            }
+                                            
+                                            $("#search_list").html("");
+                                            if(filteredList.length > 0)
+                                            {
+                                                for(i = 0; i < filteredList.length; i++){
+                                                    $("#search_list").html($("#search_list").html() + "<ons-list-item class='list__item ons-list-item-inner list__item--chevron' modifier='chevron' onclick='promptConnectOther($(this).html());'>" + filteredList[i] + "</ons-list-item>");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                //No results found
+                                                $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
+                                            }
+
+                                        }
                                         
                                         pubnub.publish({
                                             channel: historyChannel,
