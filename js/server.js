@@ -126,7 +126,7 @@ function initialize_app() {
                                 console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
-                                historyChannel = m.username + "_historyChan";
+                                historyChannel = m.username + "_hChan";
                                 
                                 pubnub.history({
                                     channel: historyChannel,
@@ -209,8 +209,6 @@ function initialize_app() {
                                     connect: function(n) { 
                                         console.log("Chat started with: " + m.username);
                                         
-                                        
-                                        
                                         ons.notification.alert({
                                             message: "Chat started with " + m.username
                                         });
@@ -240,7 +238,6 @@ function initialize_app() {
                                                 //No results found
                                                 $("#search_list").html("<ons-list-item class='list__item ons-list-item-inner'>No Results</ons-list-item>");
                                             }
-
                                         }
                                         
                                         pubnub.publish({
