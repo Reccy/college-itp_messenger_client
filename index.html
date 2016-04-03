@@ -249,6 +249,7 @@
             
             function openChat(user)
             {
+                chatLoaded = false;
                 currentConversation = user;
                 console.log("OPENING CHAT WITH: " + user);
                 tinglrNav.pushPage('conversation.html', {animation : 'lift'})
@@ -268,6 +269,8 @@
                             {
                                 displayMessage(m[0][i].sender, m[0][i].text);
                             }
+                            chatLoaded = true;
+                            $("#chatList > .ons-scroller__content").scrollTop($("#chatList > .ons-scroller__content")[0].scrollHeight);
                         },
                         count: 50,
                         reverse: false
@@ -324,7 +327,15 @@
 	                console.log("L|| " + sender + ": " + msg);
 	                $("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
 	            }
+	            if(chatLoaded)
+	            {
+	                $("#chatList > .ons-scroller__content").animate({ scrollTop: $("#chatList > .ons-scroller__content")[0].scrollHeight});    
+	            }
 	        }
+	        
+	        /*
+	        *   Code From: http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+	        */
 	        
 	        function escapeHtml(text) {
                 'use strict';

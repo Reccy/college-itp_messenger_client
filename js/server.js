@@ -16,6 +16,7 @@ var channellist = []; //List of connected channels
 var currentConversation = null; //The name of the other user that the current user is talking with
 var currentChannel = null; //The id of the channel that is currently being communicated on
 var historyChannel = null; //The channel used to store the channellist between sessions
+var chatLoaded = false; //Used to stop the scroller from going too far when first opening a chat
 
 //PUBNUB object
 var pubnub = PUBNUB({
