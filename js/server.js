@@ -583,6 +583,7 @@ function startNewChat(user){
 }
 
 function sendMessage(text, emotion){
+    
     msg = {
         "m_type": "chat_message",
         "sender": client_username,

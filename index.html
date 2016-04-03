@@ -312,6 +312,8 @@
 	        }
 	        
 	        function displayMessage(sender, msg){
+	            msg = escapeHtml(msg);
+	            
 	            if(sender === client_username){
 	                //User's message, display on the right
 	                console.log("R|| " + sender + ": " + msg);
@@ -323,6 +325,13 @@
 	                $("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
 	            }
 	        }
+	        
+	        function escapeHtml(text) {
+                'use strict';
+                return text.replace(/[\"&<>]/g, function (a) {
+                    return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+                });
+            }
 	    </script>
 	    
 	    <!-- Stylesheet for message boxes -->
@@ -664,7 +673,7 @@
 			    </ons-scroller>
 			        
 			    <div style="border-top:solid #83A0CA;"></div>
-                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Message...">
+                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Write a Tinngle...">
                     
                 </textarea>
 
