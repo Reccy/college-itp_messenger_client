@@ -470,6 +470,16 @@
             </ons-page>
         </ons-template>
         
+        <ons-template id="fatal_error.html">
+            <ons-page ng-controller="PageController" style="background: linear-gradient(150deg, rgb(52, 73, 94), rgb(49, 66, 102)); background-position:center; background-repeat:no-repeat; background-size:cover;">
+                <div style="text-align:center; margin-top:50%;">
+                    <i class="fa fa-exclamation-triangle" style="font-size:50px; color:rgb(241, 196, 15);"></i>
+                    <h4 style="color:white;">FATAL ERROR</h4> 
+                    <h4 style="color:white;">Please close the app and restart it to return to normal operation.</h4>
+                </div>
+            </ons-page>
+        </ons-template>
+        
         <ons-template id="login.html">
             <ons-page ng-controller="PageController">
                 <ons-toolbar>
@@ -823,6 +833,14 @@
             <br>
             <br>
             <ons-button class="button--small" ng-click="register_failed_illegals_modal.hide()">Okay</ons-button>
+        </ons-modal>
+        
+        <!-- Fatal error modal -->
+		<ons-modal var="fatal_error_modal">
+            <br> FATAL ERROR
+            <br>
+            <br> Please close the app and restart it
+            <br> to return to normal operation.
         </ons-modal>
 	</body>
 </html>

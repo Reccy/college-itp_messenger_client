@@ -44,6 +44,11 @@ function initialize_app() {
     console.log("\n<==========[INITIALIZING APP]==========>");
     console.log("Connecting to GLOBAL CHANNEL");
 
+
+    verifyTimeout = setTimeout(function() {
+        verify_server_connection()
+    }, 5000);
+    
     /* 
         Check who is online on the global channel.
         Set the "serverOnline" boolean depending on the SERVER's presence.
@@ -80,9 +85,7 @@ function initialize_app() {
                 }
             } else {
                 //Verify server's connection
-                verifyTimeout = setTimeout(function() {
-                    verify_server_connection()
-                }, 5000);
+                
             }
             
             //Connect to the global channel
@@ -97,7 +100,7 @@ function initialize_app() {
         pubnub.subscribe({
             channel: global_chan,
             callback: function(m) {
-                //console.log("Received message: " + JSON.stringify(m));
+                console.log("Received message: " + JSON.stringify(m));
                 if (m.m_type === "initial_connect" && m.uuid === client_uuid) {
                     if (!serverOnline) {
                         console.log("SERVER connected!");
@@ -290,18 +293,15 @@ function initialize_app() {
                             }
                         },
                         presence: function(m) {
-                            //console.log("Presence event: " + JSON.stringify(m));
-                            if (m.uuid === "SERVER" && m.action === "join") {
+                            console.log("Presence event: " + JSON.stringify(m));
+                            if (m.uuid === "SERVER" && m.action === "join" && serverOnline) {
                                 if(appInitialized){
                                     pubnub.unsubscribe({
                                         channel: global_chan,
                                         callback: function(m) {
                                             console.log("Disconnected from GLOBAL CHANNEL!");
                                             console.log("App Initialized!");
-                                            if(!loggedIn)
-                                            {
-                                                hideError("serverOffline");    
-                                            }
+                                            hideError("serverOffline");
                                             appInitialized = true;
                                         }
                                     });
@@ -373,45 +373,58 @@ function initialize_app() {
             
             /*
                 Check who is online on the private channel,
-                if the SERVER is connected, the app is
+                If the SERVER is connected, the app is
                 initialized.
             */
             pubnub.here_now({
                 channel: private_chan,
                 callback: function(m) {
-                    console.log(m.uuids[0]);
+                    console.log("TYPEOF M " + typeof m);
+                    console.log("TYPEOF M.UUIDS " + typeof m.uuids);
                     
-                    //Check for the SERVER [Not required???]
-                    for (i = 0; i < m.uuids.length; i++) {
-                        if (m.uuids[i] === "SERVER") {
-                            hideError("serverOffline");
-                            appInitialized = true;
-                        }
-                    }
-
-                    //If the app is not initialized, then restart the app
-                    if (appInitialized === false) {
-                        console.log("SERVER offline! Please try again later!");
-                        serverOnline = false;
-                        displayError("serverOffline");
-                        pubnub.unsubscribe({
-                            channel: private_chan,
-                            callback: function() {
-                                appInitialized();
-                            }
-                        });
-                        private_chan = "";
-                    } else {
-                    //Otherwise disconnect from the global channel and finish initialization
-                        pubnub.unsubscribe({
-                            channel: global_chan,
-                            callback: function(m) {
-                                console.log("Disconnected from GLOBAL CHANNEL!");
-                                console.log("App Initialized!");
+                    m.uuids != null ? console.log("NOT NULL") : console.log("IS NULL");
+                    
+                    if(m.uuids != null)
+                    {
+                        console.log(m.uuids[0]);
+                        
+                        //Check for the SERVER [Not required???]
+                        for (i = 0; i < m.uuids.length; i++) {
+                            if (m.uuids[i] === "SERVER") {
                                 hideError("serverOffline");
                                 appInitialized = true;
                             }
-                        });
+                        }    
+                        
+                        //If the app is not initialized, then restart the app
+                        if (appInitialized === false) {
+                            console.log("SERVER offline! Please try again later!");
+                            serverOnline = false;
+                            displayError("serverOffline");
+                            pubnub.unsubscribe({
+                                channel: private_chan,
+                                callback: function() {
+                                    initialize_app();
+                                }
+                            });
+                            private_chan = "";
+                        } else {
+                        //Otherwise disconnect from the global channel and finish initialization
+                            pubnub.unsubscribe({
+                                channel: global_chan,
+                                callback: function(m) {
+                                    console.log("Disconnected from GLOBAL CHANNEL!");
+                                    console.log("App Initialized!");
+                                    hideError("serverOffline");
+                                    appInitialized = true;
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        //Fatal Error
+                        displayError("fatalError");
                     }
                 }
             });
@@ -452,7 +465,25 @@ function displayError(error){
                 register_failed_password_length_modal.hide();
                 register_failed_duplicate_modal.hide();
                 register_failed_illegals_modal.hide();
+                fatal_error_modal.hide();
                 break;
+            case "fatalError":
+                fatal_error_modal.show();
+                connection_modal.hide();
+                login_attempt_modal.hide();
+                login_failed_modal.hide();
+                login_failed_duplicate_modal.hide();
+                login_failed_username_blank_modal.hide();
+                login_failed_password_blank_modal.hide();
+                login_failed_illegals_modal.hide();
+                register_attempt_modal.hide();
+                register_failed_password_miss_modal.hide();
+                register_failed_username_blank_modal.hide();
+                register_failed_username_length_modal.hide();
+                register_failed_password_blank_modal.hide();
+                register_failed_password_length_modal.hide();
+                register_failed_duplicate_modal.hide();
+                register_failed_illegals_modal.hide();
         }    
     } else {
         //Pages
@@ -460,6 +491,8 @@ function displayError(error){
             case "serverOffline":
                 tinglrNav.pushPage('connection_server_offline.html', {animation : 'fade'});
                 break;
+            case "fatalError":
+                tinglrNav.pushPage('fatal_error.html', {animation : 'fade'});
         }
     }
 }
