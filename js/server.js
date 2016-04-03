@@ -156,13 +156,17 @@ function initialize_app() {
                                                     console.log(m);
                                                     if(m.m_type === "chat_message")
                                                     {
-                                                        displayMessage(m.sender, m.text);
+                                                        if(m.text != null)
+                                                        {
+                                                            displayMessage(m.sender, m.text);    
+                                                        }
                                                     }
                                                 }
                                             });
                                         }
                                         
                                         login_attempt_modal.hide();
+                                        $("#username_replace").text(client_username);
                                         tinglrNav.pushPage('main_start.html', {animation : 'fade'});
                                         tinglrNav.on('postpush',function(){
                                             populateMainJS();

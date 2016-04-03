@@ -145,21 +145,13 @@
                     }
                 }
                 
-                //Remove ?
-                $scope.promptUser = function(){
-                    /*ons.notification.prompt({
-                        title: 'Start Chat',
-                        message: 'Who do you want to connect to?',
-                        callback: function(otherUser) {
-                            sendMessage(otherUser);
-                        }
-                    });*/
-                }
-                
-                //Remove?
+                //Sends the message to the other user
                 $scope.send = function(msg){
-                    sendMessage(msg);
-                    $scope.inputMSG = '';
+                    if(/\S/.test(msg)) //Checks message to make sure it contains alphanumeric characters
+                    {
+                        sendMessage(msg);
+                        $scope.inputMSG = '';    
+                    }
                 }
                 
                 //Reconnects to the server after a disconnect
@@ -267,7 +259,10 @@
                         callback: function(m){
                             for(i = 0; i < m[0].length; i++)
                             {
-                                displayMessage(m[0][i].sender, m[0][i].text);
+                                if(m[0][i].text != null)
+                                {
+                                    displayMessage(m[0][i].sender, m[0][i].text);    
+                                }
                             }
                             chatLoaded = true;
                             $("#chatList > .ons-scroller__content").scrollTop($("#chatList > .ons-scroller__content")[0].scrollHeight);
@@ -412,13 +407,16 @@
 		<!-- Other templates -->
         
         <ons-template id="menu.html">
+            <p style="margin-left:5px;">Hi there,<br><b id="username_replace">TEST USERNAME</b></p>
             <ons-list>
                 <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true});">
                     Conversations
                 </ons-list-item>
+                <!-- CUT UNTIL DELETE PROFILE/CHANGE PASSWORD IMPLEMENTED
                 <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
                     Profile
                 </ons-list-item>
+                -->
                 <ons-list-item modifier="chevron" onclick="logoutPrompt()">
                     Logout
                 </ons-list-item>
@@ -458,7 +456,7 @@
                     <div class="container">
                     <!--<h1 id="fittext1">Tinglr Messenger</h1>-->
                     </div>
-                    <h3>Messenger Prototype</h3>
+                    <h3 style="color:white;">Messenger App</h3>
                     <ons-bottom-toolbar style="height: 130px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
                             <ons-button class="button--large" ng-click="tinglrNav.pushPage('login.html', {animation : 'lift'})">Login</ons-button>
@@ -508,24 +506,19 @@
 				          <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>
 				        </ons-toolbar-button>
 					</div>
-					<div class="center">Tinglr</div>
+					<div class="center">Login</div>
 				</ons-toolbar>
                 <div style="text-align:center;">
-                    <h1>Login Page</h1>
-                        <ul class="list">
-                          <li class="list__item">
-                             <input ng-model="loginUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Username">
-                          </li>
-                          <li class="list__item">
-                            <input ng-model="loginPassword" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
-                          </li>
-                        </ul>
-                        <!--<div class="login-form">
-                            <input type="email" class="text-input--underbar" placeholder="Email" value="">
-                            <input type="password" class="text-input--underbar" placeholder="Password" value="">
-                            <br><br>
-                            <ons-button modifier="quiet" class="forgot-password">Forgot password?</ons-button>
-                        </div>-->
+                    <p><b>Welcome Back! :)</b></p>
+                    <input ng-model="loginUsername" type="text" class="text-input text-input--underbar" style="width:80%; margin-top:4px;" placeholder="Username">
+                    <input ng-model="loginPassword" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Password">
+                        
+                    <!--<div class="login-form">
+                        <input type="email" class="text-input--underbar" placeholder="Email" value="">
+                        <input type="password" class="text-input--underbar" placeholder="Password" value="">
+                        <br><br>
+                        <ons-button modifier="quiet" class="forgot-password">Forgot password?</ons-button>
+                    </div>-->
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
                             <ons-button class="button--large" ng-click="login(loginUsername, loginPassword);">Submit</ons-button>            
@@ -543,21 +536,13 @@
 				          <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>
 				        </ons-toolbar-button>
 					</div>
-					<div class="center">Tinglr</div>
+					<div class="center">Register</div>
 				</ons-toolbar>
                 <div style="text-align:center;">
-                    <h1>Register Page</h1>
-                        <ul class="list">
-                          <li class="list__item">
-                            <input ng-model="registerUsername" type="text" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Username">
-                          </li>                          
-                          <li class="list__item">
-                            <input ng-model="registerPasswordOne" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Password">
-                          </li>
-                          <li class="list__item">
-                            <input ng_model="registerPasswordTwo" type="password" class="text-input text-input--transparent" style="width:100%; margin-top:4px;" placeholder="Confirm Password">
-                          </li>
-                        </ul>
+                    <p><b>Welcome to Tinglr :)</b></p>
+                    <input ng-model="registerUsername" type="text" class="text-input text-input--underbar" style="width:80%; margin-top:4px;" placeholder="Username">
+                    <input ng-model="registerPasswordOne" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Password">
+                    <input ng_model="registerPasswordTwo" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Confirm Password">
                         <!--<div class="register-form">
                             <input type="text" class="text-input--underbar" placeholder="First Name" value="">
                             <input type="text" class="text-input--underbar" placeholder="Surname" value="">
@@ -620,7 +605,7 @@
     					<!--<div class="right"></div>-->
     				</ons-toolbar>
                     <div style="text-align:center;">
-                        <h1>Your Profile</h1>
+                        <h3>Your Profile</h3>
                     </div>
                 </ons-page>    
             </ons-navigator>
@@ -640,7 +625,7 @@
 				</ons-toolbar>
 				<input ng-model="search_query" ng-change="searchOtherUsers(search_query);" type="search" class="search-input" placeholder="Search...">
 				
-				<ons-scroller>
+				<ons-scroller style="height: calc(100% - 31px);">
                   <ons-list id="search_list">
                         <ons-list-item>No Results</ons-list-item>
                   </ons-list>
@@ -661,8 +646,20 @@
 					<div class="right"></div>
 				</ons-toolbar>
 			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
-			        <!-- Message transactions -->
-			        <!--<div class="emobuttons">
+			        
+			    </ons-scroller>
+			    <div id="messageInput" style="border-top:solid #83A0CA;height:50px;">
+			        <textarea ng-model="inputMSG" class="textarea" style="float:left;height:100%;margin:0;width: calc(100% - 50px);background-color:white;" placeholder="Write a Tinngle..."></textarea>
+                    <button ng-click="send(inputMSG)" style="float:left;width:50px;height:50px;background:none;margin:0;padding:0;border:0;">
+                        <ons-icon
+                            icon="fa-envelope"
+                            size="30px"
+                            fixed-width="false"
+                            style="color: #83A0CA">
+                        </ons-icon>
+                    </button>      
+                    <!-- Message transactions -->
+			         <!-- <div class="emobuttons">
 			            <div class="button-bar" style="width:100%;">
                           <div class="button-bar__item">
                             <ons-button modifier="emo1"><img src="images/joy_white.png" style="margin:auto; width: 100%;"></ons-button>
@@ -679,16 +676,10 @@
                           <div class="button-bar__item">
                             <ons-button modifier="emo5"><img src="images/fear_white.png" style="margin:auto; width: 100%;"></ons-button>
                           </div>
-                        </div>
-			        </div>-->
-			    </ons-scroller>
-			        
-			    <div style="border-top:solid #83A0CA;"></div>
-                <textarea ng-model="inputMSG" class="textarea" style="margin:0;width:100%;background-color:white;" placeholder="Write a Tinngle...">
-                    
-                </textarea>
-
-                <ons-button class="button--large" ng-click="send(inputMSG)">Send</ons-button>            
+                        </div> 
+			        </div> -->
+			    </div>
+                
             </ons-page>
         </ons-template>
 		<!-- App Structure Code End -->
