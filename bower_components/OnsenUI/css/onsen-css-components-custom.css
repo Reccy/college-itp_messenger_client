@@ -4043,6 +4043,14 @@ input[type=email], input[type=password] {
   background-color: #d1d1d1 !important;
 }
 
+#emoteBar > div > button:active{
+  background-color: rgba(0,0,0,0);
+}
+
+.selectedEmote{
+  background-color: #d1d1d1 !important;
+}
+
 /*
 .button--emo1{
   position:relative;

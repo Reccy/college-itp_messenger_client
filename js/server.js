@@ -17,6 +17,7 @@ var currentConversation = null; //The name of the other user that the current us
 var currentChannel = null; //The id of the channel that is currently being communicated on
 var historyChannel = null; //The channel used to store the channellist between sessions
 var chatLoaded = false; //Used to stop the scroller from going too far when first opening a chat
+var selectedEmotionName = "none" //Name of the currently selected emotion
 
 //PUBNUB object
 var pubnub = PUBNUB({
@@ -158,7 +159,7 @@ function initialize_app() {
                                                     {
                                                         if(m.text != null)
                                                         {
-                                                            displayMessage(m.sender, m.text);    
+                                                            displayMessage(m.sender, m.text, m.emotion);    
                                                         }
                                                     }
                                                 }
@@ -587,6 +588,43 @@ function startNewChat(user){
     });
 }
 
+function setEmotion(emotion){
+    //If the user selects the same emotion, return to no emotion
+    if(selectedEmotionName === emotion)
+    {
+        selectedEmotionName = "none";
+    } 
+    else 
+    {
+        selectedEmotionName = emotion;
+    }
+    
+    $("#emoteBar *").removeClass("selectedEmote");
+    switch(selectedEmotionName)
+    {
+        case "joy":
+            $("#joyBtn").addClass("selectedEmote");
+            break;
+        case "anger":
+            $("#angerBtn").addClass("selectedEmote");
+            break;
+        case "sad":
+            $("#sadBtn").addClass("selectedEmote");
+            break;
+        case "disgust":
+            $("#disgustBtn").addClass("selectedEmote");
+            break;
+        case "fear":
+            $("#fearBtn").addClass("selectedEmote");
+            break;
+        default:
+            break;
+    }
+    
+    console.log("Current Emotion: " + selectedEmotionName);
+}
+
+//Sends the message to other user
 function sendMessage(text, emotion){
     
     msg = {
@@ -595,6 +633,8 @@ function sendMessage(text, emotion){
         "text": text,
         "emotion" : emotion
     }
+    
+    setEmotion("none");
     
     pubnub.publish({
         channel: currentChannel,
@@ -612,7 +652,6 @@ function sendMessage(text, emotion){
     });
 }
 
-//TEMPORARY CODE FOR USER'S INPUT
 //Old code from prototype
 /*
 function sendMessage(data){

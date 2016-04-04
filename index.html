@@ -149,8 +149,8 @@
                 $scope.send = function(msg){
                     if(/\S/.test(msg)) //Checks message to make sure it contains alphanumeric characters
                     {
-                        sendMessage(msg);
-                        $scope.inputMSG = '';    
+                        sendMessage(msg, selectedEmotionName);
+                        $scope.inputMSG = '';
                     }
                 }
                 
@@ -261,7 +261,7 @@
                             {
                                 if(m[0][i].text != null)
                                 {
-                                    displayMessage(m[0][i].sender, m[0][i].text);    
+                                    displayMessage(m[0][i].sender, m[0][i].text, m[0][i].emotion);    
                                 }
                             }
                             chatLoaded = true;
@@ -309,19 +309,54 @@
                 });
 	        }
 	        
-	        function displayMessage(sender, msg){
+	        function displayMessage(sender, msg, emotion){
+	            //Escape the HTML
 	            msg = escapeHtml(msg);
 	            
+	            messageString = null; //The message string to be appended
+	            
+	            //Determine who sent the message
 	            if(sender === client_username){
 	                //User's message, display on the right
-	                console.log("R|| " + sender + ": " + msg);
-	                $("#chatList > div").append("<div class='msgBoxRight'><p>" + msg + "</p></div>");
+	                //console.log("R|| " + sender + ": " + msg + " || Emotion: " + emotion);
+	                messageString = "<div class='msgBoxRight";
+	                
+	                //$("#chatList > div").append("<div class='msgBoxRight'><p>" + msg + "</p></div>");
 	            }
 	            else{
 	                //Sender's message, display on the left
-	                console.log("L|| " + sender + ": " + msg);
-	                $("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
+	                //console.log("L|| " + sender + ": " + msg + " || Emotion: " + emotion);
+	                
+	                messageString = "<div class='msgBoxLeft";
+	                //$("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
 	            }
+	            
+	            //Apply emotion to the message
+	            switch(emotion){
+	                case 'joy':
+	                    messageString = messageString + " emotionJoy'><p>" + msg + "</p></div>";
+	                    break;
+	                case 'anger':
+	                    messageString = messageString + " emotionAnger'><p>" + msg + "</p></div>";
+	                    break;
+                    case 'sad':
+                        messageString = messageString + " emotionSad'><p>" + msg + "</p></div>";
+                        break;
+                    case 'disgust':
+                        messageString = messageString + " emotionDisgust'><p>" + msg + "</p></div>";
+                        break;
+                    case 'fear':
+                        messageString = messageString + " emotionFear'><p>" + msg + "</p></div>";
+                        break;
+                    default:
+                        messageString = messageString + " emotionNone'><p>" + msg + "</p></div>";
+                        break;
+	            }
+	            
+	            //Append the message to the screen
+	            $("#chatList > div").append(messageString);
+	            
+	            //If the chat is finished loading, scroll to the bottom of the screen
 	            if(chatLoaded)
 	            {
 	                $("#chatList > .ons-scroller__content").animate({ scrollTop: $("#chatList > .ons-scroller__content")[0].scrollHeight});    
@@ -342,6 +377,7 @@
 	    
 	    <!-- Stylesheet for message boxes -->
 	    <style>
+	        /* Left and Right message boxes */
 	        .msgBoxLeft{
 	            width:100%;
 	            float:left;
@@ -351,7 +387,7 @@
 	        .msgBoxLeft > p{
 	            float:left;
 	            color:white;
-	            background-color:#3498db;
+	            /*background-color:#3498db;*/
 	            padding:5px;
 	            max-width:60%;
 	            word-wrap:break-word;
@@ -366,12 +402,36 @@
 	        .msgBoxRight > p{
 	            float:right;
 	            color:white;
-	            background-color:#9b59b6;
+	            /*background-color:#9b59b6;*/
 	            padding:5px;
 	            max-width:60%;
 	            word-wrap:break-word;
 	        }
-            
+	        
+	        /* Basic Emotion CSS */
+	        .emotionNone > p{
+	            background-color: #34495e;
+	        }
+	        
+            .emotionJoy > p{
+	            background-color: #F1C40F;
+	        }
+	        
+	        .emotionSad > p{
+	            background-color: #2980B9;
+	        }
+	        
+	        .emotionAnger > p{
+	            background-color: #E74C3C;
+	        }
+	        
+	        .emotionFear > p{
+	            background-color: #9B59B6;
+	        }
+	        
+	        .emotionDisgust > p{
+	            background-color: #27AE60;
+	        }
             /* Custom Emotion CSS */
 	    
 	        /*
@@ -631,7 +691,7 @@
             <ons-page ng-controller="PageController" ng-init="promptUser();">
                 <ons-toolbar>
 					<div class="left">
-						<ons-toolbar-button ng-click="tinglrNav.popPage('search.html', {animation : 'fade'}); populateMain();">
+						<ons-toolbar-button onclick="setEmotion('none');" ng-click="tinglrNav.popPage('search.html', {animation : 'fade'}); populateMain();">
 					        <ons-icon icon="fa fa-chevron-circle-left"></ons-icon>   
 					    </ons-toolbar-button>
 					</div>
@@ -641,26 +701,26 @@
 			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height: calc(100% - 115px);">
 			        
 			    </ons-scroller>
-			    <div id="messageInput" style="border-top:solid #83A0CA;height:50px;">
-			        <div class="button-bar" style="width:100%;margin-top:2px;margin-bottom:2px;">
-                        <div class="button-bar__item">
-                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/anger_red.png"></button>
+			    <div id="messageInput" style="border-top:solid rgb(48, 120, 197);height:50px;">
+			        <div id="emoteBar" class="button-bar" style="width:100%;margin-top:2px;margin-bottom:2px;">
+                        <div id="disgustBtn" class="button-bar__item">
+                            <button onclick="setEmotion('disgust');" style="border:0;height:50px;" class="button-bar__button"><img src="images/disgust_green.png"></button>
                         </div>
                         
-                        <div class="button-bar__item">
-                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/disgust_green.png"></button>
+                        <div id="fearBtn" class="button-bar__item">
+                            <button onclick="setEmotion('fear');" style="border:0;height:50px;" class="button-bar__button"><img src="images/fear_purple.png"></button>
                         </div>
                         
-                        <div class="button-bar__item">
-                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/fear_purple.png"></button>
+						<div id="sadBtn" class="button-bar__item">
+                            <button onclick="setEmotion('sad');" style="border:0;height:50px;" class="button-bar__button"><img src="images/sad_blue.png"></button>
                         </div>
                         
-                        <div class="button-bar__item">
-                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/joy_yellow.png"></button>
+                        <div id="angerBtn" class="button-bar__item">
+                            <button onclick="setEmotion('anger');" style="border:0;height:50px;" class="button-bar__button"><img src="images/anger_red.png"></button>
                         </div>
-						
-						<div class="button-bar__item">
-                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/sad_blue.png"></button>
+                        
+                        <div id="joyBtn" class="button-bar__item">
+                            <button onclick="setEmotion('joy');" style="border:0;height:50px;" class="button-bar__button"><img src="images/joy_yellow.png"></button>
                         </div>
                     </div>
 			        
@@ -670,7 +730,7 @@
                             icon="fa-envelope"
                             size="35px"
                             fixed-width="false"
-                            style="color: #83A0CA">
+                            style="color: rgb(48, 120, 197)">
                         </ons-icon>
                     </button>      
 			    </div>
