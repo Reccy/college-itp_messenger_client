@@ -4035,6 +4035,15 @@ input[type=email], input[type=password] {
   font-size: 14px;
 }
 
+#sendButton:focus{
+  outline: none;
+}
+
+#sendButton:active{
+  background-color: #d1d1d1 !important;
+}
+
+/*
 .button--emo1{
   position:relative;
   float:left;
@@ -4085,3 +4094,4 @@ input[type=email], input[type=password] {
   bottom: 0;
   width: 100%;
 }
+*

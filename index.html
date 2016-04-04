@@ -512,16 +512,9 @@
                     <p><b>Welcome Back! :)</b></p>
                     <input ng-model="loginUsername" type="text" class="text-input text-input--underbar" style="width:80%; margin-top:4px;" placeholder="Username">
                     <input ng-model="loginPassword" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Password">
-                        
-                    <!--<div class="login-form">
-                        <input type="email" class="text-input--underbar" placeholder="Email" value="">
-                        <input type="password" class="text-input--underbar" placeholder="Password" value="">
-                        <br><br>
-                        <ons-button modifier="quiet" class="forgot-password">Forgot password?</ons-button>
-                    </div>-->
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
-                            <ons-button class="button--large" ng-click="login(loginUsername, loginPassword);">Submit</ons-button>            
+                            <ons-button class="button--large" ng-click="login(loginUsername, loginPassword);">Login</ons-button>            
                         </div>
                     </ons-bottom-toolbar>
                 </div>
@@ -645,39 +638,41 @@
 					<div id="other_username" class="center"></div>
 					<div class="right"></div>
 				</ons-toolbar>
-			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height:80%;">
+			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height: calc(100% - 115px);">
 			        
 			    </ons-scroller>
 			    <div id="messageInput" style="border-top:solid #83A0CA;height:50px;">
-			        <textarea ng-model="inputMSG" class="textarea" style="float:left;height:100%;margin:0;width: calc(100% - 50px);background-color:white;" placeholder="Write a Tinngle..."></textarea>
-                    <button ng-click="send(inputMSG)" style="float:left;width:50px;height:50px;background:none;margin:0;padding:0;border:0;">
+			        <div class="button-bar" style="width:100%;margin-top:2px;margin-bottom:2px;">
+                        <div class="button-bar__item">
+                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/anger_red.png"></button>
+                        </div>
+                        
+                        <div class="button-bar__item">
+                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/disgust_green.png"></button>
+                        </div>
+                        
+                        <div class="button-bar__item">
+                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/fear_purple.png"></button>
+                        </div>
+                        
+                        <div class="button-bar__item">
+                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/joy_yellow.png"></button>
+                        </div>
+						
+						<div class="button-bar__item">
+                            <button style="border:0;height:50px;" class="button-bar__button"><img src="images/sad_blue.png"></button>
+                        </div>
+                    </div>
+			        
+			        <textarea ng-model="inputMSG" class="textarea" style="float:left;height:50px;margin:0;width: calc(100% - 55px); margin-left:5px; background-color:white;" placeholder="Write a Tingle..."></textarea>
+                    <button id="sendButton" ng-click="send(inputMSG)" style="float:left;width:50px;height:50px;background:none;margin:0;padding:0;border:0;">
                         <ons-icon
                             icon="fa-envelope"
-                            size="30px"
+                            size="35px"
                             fixed-width="false"
                             style="color: #83A0CA">
                         </ons-icon>
                     </button>      
-                    <!-- Message transactions -->
-			         <!-- <div class="emobuttons">
-			            <div class="button-bar" style="width:100%;">
-                          <div class="button-bar__item">
-                            <ons-button modifier="emo1"><img src="images/joy_white.png" style="margin:auto; width: 100%;"></ons-button>
-                          </div>
-                          <div class="button-bar__item">
-                            <ons-button modifier="emo2"><img src="images/anger_white.png" style="margin:auto; width: 100%;"></ons-button>
-                          </div>
-                          <div class="button-bar__item">
-                            <ons-button modifier="emo3"><img src="images/disgust_white.png" style="margin:auto; width: 100%;"></ons-button>
-                          </div>
-                          <div class="button-bar__item">
-                            <ons-button modifier="emo4"><img src="images/sad_white.png" style="margin:auto; width: 100%;"></ons-button>
-                          </div>
-                          <div class="button-bar__item">
-                            <ons-button modifier="emo5"><img src="images/fear_white.png" style="margin:auto; width: 100%;"></ons-button>
-                          </div>
-                        </div> 
-			        </div> -->
 			    </div>
                 
             </ons-page>
