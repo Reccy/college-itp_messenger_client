@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
     <widget xmlns   = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
-        id          = "com.tinglr.app"
+        id          = "com.phonegap.example"
         versionCode = "10" 
         version     = "1.0.0" >
 
@@ -10,15 +10,13 @@
     <name>Tinglr Messenger</name>
 
     <description>
-        Tinglr Messenger App for Android.
+        A messenger app for Android.
     </description>
 
     <author href="https://build.phonegap.com" email="support@phonegap.com">
-        Tinglr Software Ltd.
+        Tinglr Ltd.
     </author>
 
-    <access origin="http://phonegap.com" subdomains="true" />
-    <allow-navigation href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <plugin name="cordova-plugin-whitelist" source="npm" />
+    <platform name="android" />
+
 </widget>
