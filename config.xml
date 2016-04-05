@@ -20,6 +20,6 @@
     <platform name="android" />
     <preference name="orientation" value="portrait" />
     <plugin name="cordova-plugin-whitelist" />
-    <plugin name="com.pubnub.cordova.pubnub" />
+    <plugin name="com.pubnub.cordova.pubnub" spec="3.7.10" source="pgb" />
     <access origin="http://phonegap.com" subdomains="true" />
 </widget>
