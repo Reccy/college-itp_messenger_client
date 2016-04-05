@@ -214,7 +214,7 @@
                 
                 $scope.populateMain = function(){
                     console.log("Populate Main! -- AngularJS");
-                    var arbitraryTimeoutBecauseAngularJSIsAwefulAndIHateItAndApparantlyOneMillisecondFixesThisBug = $timeout(function() {
+                    var genTimeout = $timeout(function() {
                         console.log("JSON LENGTH: " + Object.keys(channellist).length);
                         if(Object.keys(channellist).length > 0){
                             $("#connected_user_list").html("");
@@ -225,6 +225,76 @@
                             $("#connected_user_list").html("<ons-list-item class='list__item ons-list-item-inner'>You Have No Friends</ons-list-item>");
                         }
                     }, 1)
+                }
+                
+                //Evaluate a message to automatically determine the user's emotion
+                $scope.evalMessage = function(){
+                    //Setup emotion quantity check
+                    emotionQuantity = 0;
+                    
+                    //Setup selected emotion
+                    selectedEmotion = null;
+                    
+                    //Setup booleans for highestNum check
+                    useJoy = false;
+                    useAnger = false;
+                    useSad = false;
+                    useDisgust = false;
+                    useFear = false;
+                    
+                    //Store the regex for different emotions within the message
+                    joyRegex = $scope.inputMSG.match(/\bjoy\b|\bjoyful\b|\bamusement\b|\bamusing\b|\bbliss\b|\bblissful\b|\bcharm\b|\bcharming\b|\bcheer\b|\bcheerful\b|\bcomforable\b|\bdelightful\b|\bdelight\b|\belation\b|\belated\b|\bglee\b|\bgleeful\b|\bhumor\b|\bhumorous\b|\bpride\b|\bprideful\b|\bwonderful\b|\bawesome\b|\bsuper\b|\bgreat\b|\blove\b/gi);
+                    angerRegex = $scope.inputMSG.match(/\banger\b|\bangry\b|\bannoying\b|\bfury\b|\bhate\b|\bhatred\b|\birritation\b|\bviolence\b|\bviolent\b|\boutrage\b|\bmad\b/gi);
+                    sadRegex = $scope.inputMSG.match(/\bsad\b|\bgloomy\b|\bdepressed\b|\bdepressing\b|\bbitter\b|\bdismal\b|\bheartbroken\b|\bmelancholy\b|\bmelancholic\b|\bmournful\b|\bmourning\b|\bpessimistic\b|\bpessimism\b|\bsomber\b|\bsorrow\b|\bsorrowful\b|\bsorry\b/gi);
+                    disgustRegex = $scope.inputMSG.match(/\bdisgust\b|\bdislike\b|\bloathe\b|\bsick\b|\bnauseous\b|\bdisgusting\b|\bsickening\b|\brepungant\b|\bdistasteful\b|\bdistaste\b|\bugly\b/gi);
+                    fearRegex = $scope.inputMSG.match(/\bfear\b|\banxiety\b|\banxious\b|\bdespair\b|\bdismay\b|\bdoubt\b|\bdread\b|\bdreadful\b|\bhorror\b|\bhorrific\b|\bhorrifying\b|\bpanic\b|\bscare\b|\bfear\b|\bterrifying\b|\bworried\b|\bunease\b|\bexams\b|\bexam\b|\bnightmare\b|\bscary\b/gi);
+                    
+                    //Determine the number of occurences within each regex
+                    joyRegex != null ? joyNum = joyRegex.length : joyNum = 0;
+                    angerRegex != null ? angerNum = angerRegex.length : angerNum = 0;
+                    sadRegex != null ? sadNum = sadRegex.length : sadNum = 0;
+                    disgustRegex != null ? disgustNum = disgustRegex.length : disgustNum = 0;
+                    fearRegex != null ? fearNum = fearRegex.length : fearNum = 0;
+                    
+                    //Determine which keyword is used the most
+                    highestNum = Math.max(joyNum, angerNum, sadNum, disgustNum, fearNum);
+                    
+                    if(joyNum === highestNum){
+                        emotionQuantity++;
+                        selectedEmotion = 'joy';
+                    }
+                    
+                    if(angerNum === highestNum){
+                        emotionQuantity++;
+                        selectedEmotion = 'anger';
+                    }
+                        
+                    if(sadNum === highestNum){
+                        emotionQuantity++;
+                        selectedEmotion = 'sad';
+                    }
+                        
+                    if(disgustNum === highestNum){
+                        emotionQuantity++;
+                        selectedEmotion = 'disgust';
+                    }
+                        
+                    if(fearNum === highestNum){
+                        emotionQuantity++;
+                        selectedEmotion = 'fear';
+                    }
+                    
+                    //If only one emotion is used more than the others, apply the emotion
+                    if(emotionQuantity === 1)
+                    {
+                        if(selectedEmotion !== selectedEmotionName)
+                            setEmotion(selectedEmotion);
+                    }
+                    else
+                    {
+                        //Apply neutral emotion
+                        setEmotion('none');
+                    }
                 }
             });
             
@@ -314,32 +384,14 @@
 	        function displayMessage(sender, msg, emotion){
 	            //Escape the HTML
 	            msg = escapeHtml(msg);
-	            div = document.getElementById("Layer_1");
-			        if (div.style.display == 'none') {
-			        div.style.display = '';
-			        }
 	            
 	            messageString = null; //The message string to be appended
 	            
 	            //Determine who sent the message
-	            if(sender === client_username){
-	                //User's message, display on the right
-	                //console.log("R|| " + sender + ": " + msg + " || Emotion: " + emotion);
-	                messageString = "<div class='msgBoxRight";
-	                
-	                //$("#chatList > div").append("<div class='msgBoxRight'><p>" + msg + "</p></div>");
-	            }
-	            else{
-	                //Sender's message, display on the left
-	                //console.log("L|| " + sender + ": " + msg + " || Emotion: " + emotion);
-	                
-	                messageString = "<div class='msgBoxLeft";
-	                //$("#chatList > div").append("<div class='msgBoxLeft'><p>" + msg + "</p></div>");
-	            }
+	            sender === client_username ? messageString = "<div class='msgBoxRight" : messageString = "<div class='msgBoxLeft";
 	            
 	            //Apply emotion to the message
 	            switch(emotion){
-	                
 	                case 'joy':
 	                    messageString = messageString + " emotionJoy'><p>" + msg + "</p></div>";
 	                    break;
@@ -454,15 +506,18 @@
             
             .emotionDisgust{
                 max-width: 60%;
-                min-height: 23%;
+                height: 20%;
                 display: block;
                 background-position: center; 
                 background-repeat: no-repeat; 
                 background-size:  cover;
-                background-color: none;
+                background-color: red;
                 background-image: url("images/disgust.svg");
-                margin: 5px;
+                margin: 10px;
                 padding: 20px;
+                
+  overflow: hidden;
+  text-overflow: ellipsis;
                 
             }
             
@@ -758,37 +813,7 @@
 					<div class="right"></div>
 				</ons-toolbar>
 			    <ons-scroller class="chatarea" id="chatList" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;max-height: calc(100% - 115px);">
-			        <svg version="1.1" id="Layer_1" style="display:none;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="50%" height="25%" viewBox="0 0 334.783 178.261" enable-background="new 0 0 334.783 178.261"
-	 xml:space="preserve">
-<g>
-	<path fill="#79AF38" d="M316.063,147.42c0,3.313-6.699,3.977-8.871,6.148c-2.172,2.171-2.835-2.321-6.148-2.321
-		c-4.533,0-4.533,6.549-9.065,6.549c-4.533,0-4.533-2.207-9.066-2.207c-4.532,0-4.532-3.079-9.065-3.079s-4.533,3.659-9.066,3.659
-		s-4.533-4.71-9.066-4.71s-4.533,1.178-9.066,1.178s-4.533,6.046-9.065,6.046c-4.53,0-4.53-7.616-9.062-7.616
-		c-4.533,0-4.533,11.625-9.065,11.625c-4.531,0-4.531,1.762-9.063,1.762c-4.532,0-4.532-11.336-9.065-11.336
-		c-4.532,0-4.532-1.944-9.064-1.944c-4.533,0-4.533,6.531-9.066,6.531s-4.533,7.74-9.065,7.74c-4.533,0-4.533-7.88-9.066-7.88
-		c-4.534,0-4.534,8.375-9.069,8.375c-4.534,0-4.534,0.438-9.067,0.438s-4.534-12.101-9.067-12.101c-4.534,0-4.534-1.119-9.068-1.119
-		c-4.535,0-4.535,9.626-9.07,9.626c-4.534,0-4.534-5.219-9.068-5.219c-4.534,0-4.534-2.785-9.067-2.785
-		c-4.534,0-4.534,1.319-9.067,1.319s-4.534-1.854-9.067-1.854c-4.535,0-4.535,2.862-9.07,2.862c-4.537,0-4.537-1.691-9.073-1.691
-		c-4.535,0-4.535,1.026-9.07,1.026c-4.538,0-4.538-3.516-9.076-3.516s-4.538,8.476-9.076,8.476c-3.314,0-11.295,1.656-13.467-0.516
-		c-2.171-2.172-4.97-10.153-4.97-13.466c0-4.614,5.352-4.614,5.352-9.229c0-4.615-5.114-4.615-5.114-9.23
-		c0-4.616,13.324-4.616,13.324-9.232c0-4.615-11.721-4.615-11.721-9.23s4.944-4.615,4.944-9.229s6.933-4.614,6.933-9.229
-		s-3.476-4.615-3.476-9.229c0-4.616,0.574-4.616,0.574-9.232c0-4.617-12.696-4.617-12.696-9.234c0-4.616,16.081-4.616,16.081-9.232
-		c0-4.619-12.777-4.619-12.777-9.238c0-4.619,6.36-4.619,6.36-9.238c0-3.314-0.831-7.141,1.341-9.312s5.998,3.07,9.312,3.07
-		c4.533,0,4.533-5.5,9.065-5.5c4.534,0,4.534,5.139,9.067,5.139c4.533,0,4.533-13.194,9.065-13.194c4.533,0,4.533,16.28,9.066,16.28
-		s4.533-15.147,9.066-15.147s4.533,9.17,9.066,9.17s4.533-5.572,9.065-5.572c4.531,0,4.531-1.144,9.061-1.144
-		c4.533,0,4.533,11.646,9.066,11.646c4.532,0,4.532-4.417,9.063-4.417c4.532,0,4.532,3.522,9.065,3.522
-		c4.532,0,4.532-13.106,9.064-13.106c4.534,0,4.534,11.627,9.067,11.627c4.532,0,4.532,2.844,9.064,2.844
-		c4.534,0,4.534-0.64,9.067-0.64c4.534,0,4.534-5.147,9.068-5.147c4.533,0,4.533,2.446,9.067,2.446s4.534-5.106,9.067-5.106
-		c4.534,0,4.534-0.982,9.068-0.982c4.535,0,4.535-1.494,9.07-1.494c4.534,0,4.534,3.188,9.068,3.188
-		c4.533,0,4.533-5.532,9.067-5.532c4.533,0,4.533,11.802,9.066,11.802c4.534,0,4.534-9.424,9.067-9.424
-		c4.535,0,4.535-1.358,9.07-1.358c4.536,0,4.536,5.62,9.072,5.62c4.535,0,4.535-7.187,9.07-7.187c4.538,0,4.538,11.742,9.076,11.742
-		s4.538-7.527,9.076-7.527c3.313,0,5.313,4.036,7.485,6.208c2.172,2.172-3.937,4.172-3.937,7.485c0,4.615,12.986,4.615,12.986,9.229
-		c0,4.615-5.113,4.615-5.113,9.23c0,4.616-7.99,4.616-7.99,9.232c0,4.615,5.149,4.615,5.149,9.23c0,4.614,10.545,4.614,10.545,9.229
-		s-9.908,4.615-9.908,9.229s6.644,4.614,6.644,9.229c0,4.616-10.633,4.616-10.633,9.231c0,4.618,13.566,4.618,13.566,9.235
-		c0,4.616-7.68,4.616-7.68,9.232c0,4.619-2.015,5.143-1.031,9.655C312.174,143.405,316.063,142.801,316.063,147.42z"/>
-</g>
-</svg>
+			        
 			    </ons-scroller>
 			    <div id="messageInput" style="border-top:solid rgb(48, 120, 197);height:50px;">
 			        <div id="emoteBar" class="button-bar" style="width:100%;margin-top:2px;margin-bottom:2px;">
@@ -813,7 +838,7 @@
                         </div>
                     </div>
 			        
-			        <textarea ng-model="inputMSG" class="textarea" style="float:left;height:50px;margin:0;width: calc(100% - 55px); margin-left:5px; background-color:white;" placeholder="Write a Tingle..."></textarea>
+			        <textarea ng-model="inputMSG" ng-change="evalMessage();" class="textarea" style="float:left;height:50px;margin:0;width: calc(100% - 55px); margin-left:5px; background-color:white;" placeholder="Write a Tingle..."></textarea>
                     <button id="sendButton" ng-click="send(inputMSG)" style="float:left;width:50px;height:50px;background:none;margin:0;padding:0;border:0;">
                         <ons-icon
                             icon="fa-envelope"
