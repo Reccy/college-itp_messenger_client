@@ -15,6 +15,7 @@
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
 		<script src="phonegap.js"></script>
+		<script src="pubnub.js"></script>
 		<script src="js/server.js"></script>
 	    <script>
 			var module = ons.bootstrap('my-app', ['onsen']);
@@ -426,7 +427,7 @@
 	        .emotionAnger > p{
 	            text-align: center;
 	            background-color:none;
-	            max-width: 80%;
+	            max-width: 60%;
 	            float:left;
 	            padding: 20px;
 	            margin: auto;
@@ -438,9 +439,9 @@
 	        
 	        .emotionDisgust  > p{
 	            text-align: center;
-	            background-color:none;
-	            max-width: 80%;
-	            float:left;
+	            background-color: green;
+	            max-width: 60%;
+	            float: left;
 	            padding: 20px;
 	            margin: auto;
 	            
@@ -454,7 +455,7 @@
                 background-position:center; 
                 background-repeat:no-repeat; 
                 background-size:cover;
-                background-color: none;
+                background-color: red;
                 background-image: url("images/disgust.svg");
                 margin: 5px;
                 padding: 20px;
