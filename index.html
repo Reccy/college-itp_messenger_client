@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+		<meta http-equiv="Content-Security-Policy">
 		<title>Tinglr Messenger</title>
 
 		<!-- OnsenUI plugin -->
@@ -346,7 +346,7 @@
                         messageString = messageString + " emotionSad'><p>" + msg + "</p></div>";
                         break;
                     case 'disgust':
-                        messageString = messageString + " emotionDisgust'><clipPath id='svgPath'><p>" + msg + "</p></clipPath></div>";
+                        messageString = messageString + " clipPath id='svgPath'><p>" + msg + "</p></clipPath>";
                         break;
                     case 'fear':
                         messageString = messageString + " emotionFear'><p>" + msg + "</p></div>";
