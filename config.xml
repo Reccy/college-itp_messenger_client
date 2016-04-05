@@ -20,5 +20,7 @@
     <access origin="http://phonegap.com" subdomains="true" />
     <allow-navigation href="http://*/*" />
     <allow-intent href="https://*/*" />
+    <plugin name="cordova-plugin-whitelist" source="npm" />
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src *  'unsafe-inline'; script-src *  'unsafe-inline'; media-src *">
 
 </widget>

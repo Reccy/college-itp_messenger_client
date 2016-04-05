@@ -10,9 +10,6 @@
 	    <script src="bower_components/angular/angular.js"></script>
 	    <script src="bower_components/OnsenUI/js/onsenui.js"></script>
 
-		<gap:plugin name="cordova-plugin-whitelist" source="npm" />
-		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src *  'unsafe-inline'; script-src *  'unsafe-inline'; media-src *">
-
 		<!-- Javascript plugins for client -->
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
@@ -438,12 +435,14 @@
 	            background-color:green;
 	            max-width: 90%;
 	            float:left;
+	            padding: 0auto
+	            margin: 0auto;
 	        }
             /* Custom Emotion CSS */
             
             .emotionDisgust{
                 max-width: 50%;
-                min-height: 15%;
+                min-height: 10%;
                 background-position:center; 
                 background-repeat:no-repeat; 
                 background-size:cover;
@@ -452,8 +451,8 @@
                 margin: 5px;
                 padding-top: 10px;
                 padding-bottom:10px;
-                padding-left : 30px;
-                padding-right : 30px;
+                padding-left : 10px;
+                padding-right : 10px;
             }
             
             .motionDisgust{
