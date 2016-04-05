@@ -20,7 +20,7 @@
     <platform name="android" />
     <preference name="orientation" value="portrait" />
     <plugin name="cordova-plugin-whitelist" />
-    <plugin name="com.pubnub.cordova.pubnub" spec="3.7.10" source="pgb" />
+    <!-- <plugin name="com.pubnub.cordova.pubnub" spec="3.7.10" source="pgb" /> -->
     <access origin="*" subdomains="true" />
     <allow-navigation href="*" />
 </widget>
