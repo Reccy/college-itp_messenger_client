@@ -21,6 +21,4 @@
     <preference name="orientation" value="portrait" />
     <plugin name="cordova-plugin-whitelist" />
     <access origin="http://phonegap.com" subdomains="true" />
-    <allow-navigation href="http://*/*" />
-    <allow-intent href="https://*/*" />
 </widget>
