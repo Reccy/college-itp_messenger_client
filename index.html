@@ -13,6 +13,7 @@
 		<!-- Javascript plugins for client -->
 		<script src="js/pubnub-3.10.3.min.js"></script>
 		<script src="js/jquery-2.2.0.min.js"></script>
+		<script src="phonegap.js"></script>
 		<script src="js/server.js"></script>
 
 	    <script>
@@ -423,7 +424,12 @@
 	        }
 	        
 	        .emotionAnger > p{
-	            background-color: #E74C3C;
+	            text-align: center;
+	            background-color:none;
+	            max-width: 80%;
+	            float:left;
+	            padding: 20px;
+	            margin: auto;
 	        }
 	        
 	        .emotionFear > p{
@@ -442,7 +448,7 @@
             /* Custom Emotion CSS */
             
             .emotionDisgust{
-                max-width: 100%;
+                max-width: 60%;
                 min-height: 23%;
                 display:block;
                 background-position:center; 
@@ -456,8 +462,7 @@
             }
             
             .emotionAnger{
-                max-width: 100%;
-                width: 40%;
+                max-width: 60%;
                 min-height: 15%;
                 background-color: #E74C3C;
                 background-size: cover;
