@@ -99,6 +99,7 @@ function initialize_app() {
         Connect to the global channel
     */
     function connect_to_global() {
+        console.log("CONNECTING TO GLOBAL!");
         pubnub.subscribe({
             channel: global_chan,
             callback: function(m) {
