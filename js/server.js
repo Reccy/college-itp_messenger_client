@@ -262,26 +262,10 @@ function initialize_app() {
                                         console.log(m);
                                         if(m.m_type === "chat_message")
                                         {
-                                            displayMessage(m.sender, m.text);
+                                            displayMessage(m.sender, m.text, m.emotion);
                                         }
                                     }
                                 });
-                                
-                                /*$("#other_username").html(m.sender);
-                                pubnub.subscribe({
-                                    channel: m.channel,
-                                    connect: function() {
-                                        console.log("CHAT CONNECTED");
-                                        tempChatStarted = true;
-                                        tempChannel = m.channel;
-                                    },
-                                    callback: function(m) {
-                                        if(m.m_type === "chat_message") {
-                                            console.log(m.sender + ": " + m.contents);
-                                            displayMessage(m.sender, m.contents);
-                                        }
-                                    }
-                                })*/
                             } else {
                                 //Unknown m_type received
                                 console.log("Unknown Message Type - Ignoring Message");

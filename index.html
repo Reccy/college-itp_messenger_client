@@ -1,3 +1,4 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -414,7 +415,7 @@
 	        }
 	        
             .emotionJoy > p{
-	            background-color: #F1C40F;
+	           background-color: #F1C40F;
 	        }
 	        
 	        .emotionSad > p{
@@ -429,10 +430,67 @@
 	            background-color: #9B59B6;
 	        }
 	        
-	        .emotionDisgust > p{
-	            background-color: #27AE60;
+	        .emotionDisgust  > p{
+	            text-align: center;
+	            background-color:green;
+	            max-width: 90%;
+	            float:left;
 	        }
             /* Custom Emotion CSS */
+            
+            .emotionDisgust{
+                max-width: 50%;
+                min-height: 15%;
+                background-position:center; 
+                background-repeat:no-repeat; 
+                background-size:cover;
+                background-color: red;
+                background-image: url("images/disgust.svg");
+                margin: 5px;
+                padding-top: 10px;
+                padding-bottom:10px;
+                padding-left : 30px;
+                padding-right : 30px;
+            }
+            
+            .motionDisgust{
+                text-align: center;
+                max-width: 60%;
+                min-height: 15%;
+                background-color: #27AE60;
+                background-size: cover;
+                margin-top: 5px;
+                -webkit-clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+                clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+            }
+            
+            .emotionAnger{
+                max-width: 60%;
+                width:40%;
+                min-height: 15%;
+                background-color: #E74C3C;
+                background-size: cover;
+                padding-left : 30px;
+                padding-right : 30px;
+                -webkit-clip-path:  polygon(99% 0%, 86% 13%, 83% 0, 65% 3%, 57% 11%, 46% 0, 36% 11%, 25% 0, 19% 9%, 3% 1%, 9% 18%, 0 27%, 8% 38%, 0 52%, 9% 59%, 0 70%, 6% 77%, 3% 95%, 16% 89%, 28% 100%, 40% 89%, 53% 99%, 64% 89%, 75% 100%, 83% 90%, 100% 95%, 94% 81%, 100% 64%, 93% 46%, 100% 34%, 95% 23%);
+                clip-path:  polygon(99% 0%, 86% 13%, 83% 0, 65% 3%, 57% 11%, 46% 0, 36% 11%, 25% 0, 19% 9%, 3% 1%, 9% 18%, 0 27%, 8% 38%, 0 52%, 9% 59%, 0 70%, 6% 77%, 3% 95%, 16% 89%, 28% 100%, 40% 89%, 53% 99%, 64% 89%, 75% 100%, 83% 90%, 100% 95%, 94% 81%, 100% 64%, 93% 46%, 100% 34%, 95% 23%);
+                -webkit-animation: clips 1s ease infinite;
+                 animation: clips 1s ease infinite;
+            }
+
+            @-webkit-keyframes clips {
+                 50% {
+                -webkit-clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
+                clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
+                }
+            }
+
+            @keyframes clips {
+                  50% {
+                -webkit-clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
+                 clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
+                  }
+            }
 	    
 	        /*
 	        @keyframes pulse {
