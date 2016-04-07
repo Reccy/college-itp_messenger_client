@@ -18,6 +18,7 @@
     </author>
 
     <platform name="android" />
+    <platform name="ios" />
     <preference name="orientation" value="portrait" />
     <plugin name="cordova-plugin-whitelist" />
     <!-- <plugin name="com.pubnub.cordova.pubnub" spec="3.7.10" source="pgb" /> -->
