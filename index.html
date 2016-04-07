@@ -406,6 +406,8 @@
 	        //Displays a message on the chat screen
 	        function displayMessage(sender, msg, emotion){
 	            
+	            console.log("displayMessage(" + sender + "," + msg + "," + emotion + ");");
+	            
 	            //If statement ensures that the message is only between the two parties.
 	            if(sender === currentConversation || sender === client_username){
     	            //Escape the HTML

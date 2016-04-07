@@ -197,9 +197,6 @@ function initialize_app() {
                                             //Subscribe to the new user channel
                                             pubnub.subscribe({
                                                 channel: channellist[i].channel,
-                                                connect: function(){
-                                                    console.log("Chat started with: " + channellist[i].username);
-                                                },
                                                 callback: function(m) {
                                                     console.log(m);
                                                     //MESSAGE TYPE: chat_message
