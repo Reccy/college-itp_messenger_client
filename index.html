@@ -382,43 +382,45 @@
 	        }
 	        
 	        function displayMessage(sender, msg, emotion){
-	            //Escape the HTML
-	            msg = escapeHtml(msg);
-	            
-	            messageString = null; //The message string to be appended
-	            
-	            //Determine who sent the message
-	            sender === client_username ? messageString = "<div class='msgBoxRight" : messageString = "<div class='msgBoxLeft";
-	            
-	            //Apply emotion to the message
-	            switch(emotion){
-	                case 'joy':
-	                    messageString = messageString + " emotionJoy'><p>" + msg + "</p></div>";
-	                    break;
-	                case 'anger':
-	                    messageString = messageString + " emotionAnger'><p>" + msg + "</p></div>";
-	                    break;
-                    case 'sad':
-                        messageString = messageString + " emotionSad'><p>" + msg + "</p></div>";
-                        break;
-                    case 'disgust':
-                        messageString = messageString + " emotionDisgust'><p>" + msg + "</p></div>";
-                        break;
-                    case 'fear':
-                        messageString = messageString + " emotionFear'><p>" + msg + "</p></div>";
-                        break;
-                    default:
-                        messageString = messageString + " emotionNone'><p>" + msg + "</p></div>";
-                        break;
-	            }
-	            
-	            //Append the message to the screen
-	            $("#chatList > div").append(messageString);
-	            
-	            //If the chat is finished loading, scroll to the bottom of the screen
-	            if(chatLoaded)
-	            {
-	                $("#chatList > .ons-scroller__content").animate({ scrollTop: $("#chatList > .ons-scroller__content")[0].scrollHeight});    
+	            if(sender === currentConversation || sender === client_username){
+    	            //Escape the HTML
+    	            msg = escapeHtml(msg);
+    	            
+    	            messageString = null; //The message string to be appended
+    	            
+    	            //Determine who sent the message
+    	            sender === client_username ? messageString = "<div class='msgBoxRight" : messageString = "<div class='msgBoxLeft";
+    	            
+    	            //Apply emotion to the message
+    	            switch(emotion){
+    	                case 'joy':
+    	                    messageString = messageString + " emotionJoy'><p>" + msg + "</p></div>";
+    	                    break;
+    	                case 'anger':
+    	                    messageString = messageString + " emotionAnger'><p>" + msg + "</p></div>";
+    	                    break;
+                        case 'sad':
+                            messageString = messageString + " emotionSad'><p>" + msg + "</p></div>";
+                            break;
+                        case 'disgust':
+                            messageString = messageString + " emotionDisgust'><p>" + msg + "</p></div>";
+                            break;
+                        case 'fear':
+                            messageString = messageString + " emotionFear'><p>" + msg + "</p></div>";
+                            break;
+                        default:
+                            messageString = messageString + " emotionNone'><p>" + msg + "</p></div>";
+                            break;
+    	            }
+    	            
+    	            //Append the message to the screen
+    	            $("#chatList > div").append(messageString);
+    	            
+    	            //If the chat is finished loading, scroll to the bottom of the screen
+    	            if(chatLoaded)
+    	            {
+    	                $("#chatList > .ons-scroller__content").animate({ scrollTop: $("#chatList > .ons-scroller__content")[0].scrollHeight});    
+    	            }
 	            }
 	        }
 	        
