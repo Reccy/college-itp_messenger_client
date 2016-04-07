@@ -31,22 +31,58 @@ var pubnub = PUBNUB({
 //Debug console log
 console.log("Your UUID: " + client_uuid);
 
+
+
+/******************/
+/*SERVER CODE START/
+/******************/
+
+//Connect to user database and update userlist
+pubnub.history({
+     channel: db_chan,
+     callback: function(m){
+         if(m[0][0].m_type == "db_results"){
+            userlist.length = 0;
+            for(i = 0; i < m[0][0].usernames.length; i++){
+                userlist.push(m[0][0].usernames[i]);
+            }
+        }
+     },
+     count: 1,
+     reverse: false
+});
+
+pubnub.subscribe({
+    channel: db_chan,
+    callback: function(m){
+        if(m.m_type == "db_results"){
+            userlist.length = 0;
+            for(i = 0; i < m.usernames.length; i++){
+                userlist.push(m.usernames[i]);
+            }
+        }
+    }
+});
+
+//Start App
+initialize_app();
+
+
+
 /**************************/
 /*Initialization Functions*/
 /**************************/
 
 /* 
     Initialize the app 
-    SHOULD ONLY BE CALLED ON STARTUP!!!
 */
 function initialize_app() {
     clearTimeout(verifyTimeout); //Clear the timeout verification
-    //appInitialized = false;
     
     console.log("\n<==========[INITIALIZING APP]==========>");
     console.log("Connecting to GLOBAL CHANNEL");
 
-
+    //Setup a connection timeout
     verifyTimeout = setTimeout(function() {
         verify_server_connection()
     }, 5000);
@@ -85,9 +121,6 @@ function initialize_app() {
                         channel: private_chan,
                     });        
                 }
-            } else {
-                //Verify server's connection
-                
             }
             
             //Connect to the global channel
@@ -100,26 +133,34 @@ function initialize_app() {
     */
     function connect_to_global() {
         console.log("CONNECTING TO GLOBAL!");
+        
+        //Subscribe to the global channel
         pubnub.subscribe({
             channel: global_chan,
             callback: function(m) {
                 console.log("Received message: " + JSON.stringify(m));
+                
+                //Handle the initial connection callback
                 if (m.m_type === "initial_connect" && m.uuid === client_uuid) {
+                    
+                    //At this point, the server should be online
                     if (!serverOnline) {
                         console.log("SERVER connected!");
                         serverOnline = true;
                     }
                     private_chan = m.channel;
 
-                    /* Handle messages from the PRIVATE CHANNEL */
+                    //Subscribe to, and handle messages from this user's PRIVATE CHANNEL
                     pubnub.subscribe({
                         channel: private_chan,
                         callback: function(m) {
                             console.log(m.m_type);
-                            if (m.m_type === "server_shutdown") {
+                            
+                            //MESSAGE TYPE: server_shutdown
+                            //DESCRIPTION: Closes all connection and restarts the client.
+                            if (m.m_type === "server_shutdown"){
                                 displayError("serverOffline");
                                 serverOnline = false;
-                                //appInitialized = false;
                                 console.log("SERVER shutdown message received");
                                 pubnub.unsubscribe({
                                     channel: private_chan,
@@ -128,12 +169,16 @@ function initialize_app() {
                                     }
                                 });
                             }
+                            //MESSAGE TYPE: user_login_success
+                            //DESCRIPTION: Notifies the user of a successful login,
+                            //sends the user to the main menu and sets up variables.
                             else if(m.m_type === "user_login_success") {
                                 console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
                                 historyChannel = m.username + "_hChan";
                                 
+                                //Connects the user to their friends
                                 pubnub.history({
                                     channel: historyChannel,
                                     callback: function(m){
@@ -145,17 +190,20 @@ function initialize_app() {
                                         console.log(Object.keys(channellist).length);
                                         for(i = 0; i < Object.keys(channellist).length; i++)
                                         {
-                                            //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "CHAT_INIT" SECTION ASWELL!!!
+                                            //PROGRAMMER NOTE: 
+                                            //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "CHAT_INIT" SECTION ASWELL!
                                             console.log("Starting new chat with: " + channellist[i].username);
                                             
                                             //Subscribe to the new user channel
                                             pubnub.subscribe({
                                                 channel: channellist[i].channel,
                                                 connect: function(){
-                                                    //console.log("Chat started with: " + channellist[i].username);
+                                                    console.log("Chat started with: " + channellist[i].username);
                                                 },
                                                 callback: function(m) {
                                                     console.log(m);
+                                                    //MESSAGE TYPE: chat_message
+                                                    //DESCRIPTION: Display the received message on the chat panel
                                                     if(m.m_type === "chat_message")
                                                     {
                                                         if(m.text != null)
@@ -167,6 +215,7 @@ function initialize_app() {
                                             });
                                         }
                                         
+                                        //Send the user to the main menu
                                         login_attempt_modal.hide();
                                         $("#username_replace").text(client_username);
                                         tinglrNav.pushPage('main_start.html', {animation : 'fade'});
@@ -181,6 +230,8 @@ function initialize_app() {
                                     reverse: false
                                 });
                             }
+                            //MESSAGE TYPE: user_login_failed
+                            //DESCRIPTION: Notifies the user of a failed login
                             else if(m.m_type === "user_login_failed") {
                                 console.log("Login Failed!");
                                 loggedIn = false;
@@ -188,6 +239,8 @@ function initialize_app() {
                                 login_attempt_modal.hide();
                                 login_failed_modal.show();
                             }
+                            //MESSAGE TYPE: user_login_duplicate
+                            //DESCRIPTION: Notifies the user of a duplicate user
                             else if(m.m_type === "user_login_duplicate") {
                                 console.log("Login Failed: Duplicate Login!");
                                 loggedIn = false;
@@ -195,6 +248,8 @@ function initialize_app() {
                                 login_attempt_modal.hide();
                                 login_failed_duplicate_modal.show();
                             }
+                            //MESSAGE TYPE: user_register_success
+                            //DESCRIPTION: Notifies the user of a successful registration
                             else if(m.m_type === "user_register_success") {
                                 console.log("Registration Successful!");
                                 loggedIn = true;
@@ -202,6 +257,8 @@ function initialize_app() {
                                 register_attempt_modal.hide();
                                 tinglrNav.pushPage("main_start.html", {animation : 'fade'});
                             }
+                            //MESSAGE TYPE: user_register_duplicate
+                            //DESCRIPTION: Notifies the user of a duplicate registered user
                             else if(m.m_type === "user_register_duplicate") {
                                 console.log("Registration Failed: Duplicate User!");
                                 loggedIn = false;
@@ -209,8 +266,10 @@ function initialize_app() {
                                 register_attempt_modal.hide();
                                 register_failed_duplicate_modal.show();
                             }
+                            //MESSAGE TYPE: chat_init
+                            //DESCRIPTION: Initiates a chat with a new friend ^_^
                             else if(m.m_type === "chat_init") {
-                                //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "LOGIN" SECTION ASWELL!!!
+                                //IF CHANGES ARE MADE HERE, COPY THE CODE TO THE "LOGIN" SECTION ASWELL!
                                 console.log("Starting new chat with: " + m.username);
                                 
                                 //Subscribe to the new user channel
@@ -219,15 +278,18 @@ function initialize_app() {
                                     connect: function(n) { 
                                         console.log("Chat started with: " + m.username);
                                         
+                                        //Notify the user of the new chat
                                         ons.notification.alert({
                                             message: "Chat started with " + m.username
                                         });
                                         
+                                        //Add the new user/channel pair to the persistant list of channels
                                         channellist.push({
                                             "username" : m.username,
                                             "channel" : m.channel
                                         });
                                         
+                                        //If the user is on the search page, remove the friend from the search list
                                         if(tinglrNav.getCurrentPage().page === "search.html")
                                         {
                                             //Removes new friend from the search list
@@ -250,6 +312,7 @@ function initialize_app() {
                                             }
                                         }
                                         
+                                        //Update the persistant channel list
                                         pubnub.publish({
                                             channel: historyChannel,
                                             message: channellist,
@@ -257,10 +320,14 @@ function initialize_app() {
                                                 console.log("Channel List updated!");
                                             }
                                         });
+                                        
+                                        //Populate the main menu
                                         populateMainJS();
                                     },
                                     callback: function(m) {
                                         console.log(m);
+                                        //MESSAGE TYPE: chat_message
+                                        //DESCRIPTION: Display the received message on the chat panel
                                         if(m.m_type === "chat_message")
                                         {
                                             displayMessage(m.sender, m.text, m.emotion);
@@ -285,6 +352,8 @@ function initialize_app() {
                         },
                         presence: function(m) {
                             console.log("Presence event: " + JSON.stringify(m));
+                            
+                            //Presence keeps track of the server status
                             if (m.uuid === "SERVER" && m.action === "join" && serverOnline) {
                                 if(appInitialized){
                                     pubnub.unsubscribe({
@@ -308,7 +377,7 @@ function initialize_app() {
                                     });
                                 }
                             }
-
+                            
                             if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                                 console.log("SERVER offline! Disconnecting from: " + private_chan);
                                 pubnub.unsubscribe({
@@ -320,23 +389,22 @@ function initialize_app() {
                             }
                         }
                     });
+                    //MESSAGE TYPE: server_shutdown
+                    //DESCRIPTION: Closes all connection and restarts the client.
                 } else if (m.m_type === "server_shutdown") {
-                    if (m.m_type === "server_shutdown") {
-                        displayError("serverOffline");
-                        serverOnline = false;
-                        //appInitialized = false;
-                        console.log("SERVER shutdown message received");
-                        pubnub.unsubscribe({
-                            channel: private_chan,
-                            callback: function() {
-                                initialize_app();
-                            }
-                        });
-                    }
+                    displayError("serverOffline");
+                    serverOnline = false;
+                    console.log("SERVER shutdown message received");
+                    pubnub.unsubscribe({
+                        channel: private_chan,
+                        callback: function() {
+                            initialize_app();
+                        }
+                    });
                 }
             },
             presence: function(m) {
-                //console.log(JSON.stringify(m));
+                //Presence keeps track of the server status
                 if ((m.uuid === "SERVER" && (m.action === "leave" || m.action === "timeout")) && serverOnline) {
                     console.log("SERVER offline! Please try again later!");
                     serverOnline = false;
@@ -356,8 +424,7 @@ function initialize_app() {
         Verify that the client has connected with the server on the private channel
     */
     function verify_server_connection() {
-        console.log("Verifying Server Connection...");
-        console.log(appInitialized === true);
+        console.log("Verifying Server Connection:");
         console.log("App initialized: " + appInitialized);
         //If the app is not initialized...
         if (appInitialized === false) {
@@ -379,7 +446,7 @@ function initialize_app() {
                     {
                         console.log(m.uuids[0]);
                         
-                        //Check for the SERVER [Not required???]
+                        //Check for the SERVER
                         for (i = 0; i < m.uuids.length; i++) {
                             if (m.uuids[i] === "SERVER") {
                                 hideError("serverOffline");
@@ -422,6 +489,8 @@ function initialize_app() {
         }
     }
     
+    //When the user reconnects from a disconnect,
+    //relogin to the server.
     function verify_login() {
         console.log("Sending reconnect message to server.");
         pubnub.publish({
@@ -507,44 +576,6 @@ function hideError(error){
     }
 }
 
-/******************************/
-/*Initialization Functions End*/
-/******************************/
-
-//START OF SCRIPT
-
-//Connect to user database and update userlist
-pubnub.history({
-     channel: db_chan,
-     callback: function(m){
-         if(m[0][0].m_type == "db_results"){
-            userlist.length = 0;
-            for(i = 0; i < m[0][0].usernames.length; i++){
-                userlist.push(m[0][0].usernames[i]);
-            }
-        }
-     },
-     count: 1,
-     reverse: false
-});
-
-pubnub.subscribe({
-    channel: db_chan,
-    callback: function(m){
-        if(m.m_type == "db_results"){
-            userlist.length = 0;
-            for(i = 0; i < m.usernames.length; i++){
-                userlist.push(m.usernames[i]);
-            }
-        }
-    }
-});
-
-
-
-//Start App
-initialize_app();
-
 //Prompt the user if they want to connect to another new user
 function promptConnectOther(user){
     ons.notification.confirm({
@@ -573,6 +604,7 @@ function startNewChat(user){
     });
 }
 
+//Set's the users currently set emotion
 function setEmotion(emotion){
     //If the user selects the same emotion, return to no emotion
     if(selectedEmotionName === emotion)
@@ -584,6 +616,7 @@ function setEmotion(emotion){
         selectedEmotionName = emotion;
     }
     
+    //Highlight the selected emote on the emote bar
     $("#emoteBar *").removeClass("selectedEmote");
     switch(selectedEmotionName)
     {
@@ -612,6 +645,7 @@ function setEmotion(emotion){
 //Sends the message to other user
 function sendMessage(text, emotion){
     
+    //Message to be sent
     msg = {
         "m_type": "chat_message",
         "sender": client_username,
@@ -619,8 +653,10 @@ function sendMessage(text, emotion){
         "emotion" : emotion
     }
     
+    //Clear the emotion
     setEmotion("none");
     
+    //Send the message to the other user
     pubnub.publish({
         channel: currentChannel,
         message: msg,
@@ -636,87 +672,3 @@ function sendMessage(text, emotion){
         }
     });
 }
-
-//Old code from prototype
-/*
-function sendMessage(data){
-    if(!serverOnline)
-    {
-        console.log("ERROR! Can not send message: Server offline!");
-    } 
-    else if(!appInitialized)
-    {
-        console.log("ERROR! Can't send message: App not yet initialized!");
-    }
-    else if(!loggedIn)
-    {
-        msg = {
-            "m_type": "user_login",
-            "uuid": client_uuid,
-            "contents": data
-        };
-        
-        pubnub.publish({
-            channel: private_chan,
-            message: msg,
-            callback: function(m){
-                if (m[0] == "1")
-                {
-                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
-                }
-                else
-                {
-                    console.log("MESSAGE SENT FAILED: " + m);
-                }
-            }
-        });
-    }
-    else if(!tempChatStarted)
-    {
-        console.log("STARTING CHAT WITH: " + data);
-        
-        msg = {
-            "m_type": "chat_start",
-            "sender": client_username,
-            "receiver": data
-            }
-        
-        pubnub.publish({
-            channel: private_chan,
-            message: msg,
-            callback: function(m){
-                if (m[0] == "1")
-                {
-                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
-                }
-                else
-                {
-                    console.log("MESSAGE SENT FAILED: " + m);
-                }
-            }
-        });
-    }
-    else
-    {
-        msg = {
-            "m_type": "chat_message",
-            "sender": client_username,
-            "contents": data
-        }
-        
-        pubnub.publish({
-            channel: tempChannel,
-            message: msg,
-            callback: function(m){
-                if (m[0] == "1")
-                {
-                    console.log("MESSAGE SENT SUCCESSFULLY: " + m);
-                }
-                else
-                {
-                    console.log("MESSAGE SENT FAILED: " + m);
-                }
-            }
-        })
-    }
-};*/

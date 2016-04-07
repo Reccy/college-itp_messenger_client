@@ -22,6 +22,7 @@
     	    module.controller('PageController', function($scope, $timeout) {
                 ons.ready(function() {});
                 
+                // Login function for the user.
                 $scope.login = function(loginUsername, loginPassword){
                     loginFailed = false;
                     illegals = /^[0-9a-zA-Z]+$/;
@@ -53,6 +54,7 @@
                     if(!loginFailed){
                         login_attempt_modal.show();
                         
+                        //Sends the login request to the server
                         pubnub.publish({
                         channel: private_chan,
                             message: {
@@ -75,6 +77,7 @@
                     }
                 }
                 
+                //Register function for the user
                 $scope.register = function(registerUsername, registerPasswordOne, registerPasswordTwo){
                     registerFailed = false;
                     illegals = /^[0-9a-zA-Z]+$/;
@@ -125,6 +128,7 @@
                     {
                         register_attempt_modal.show();
                         
+                        //Sends register request to the server
                         pubnub.publish({
                             channel: private_chan,
                             message: {
@@ -149,7 +153,8 @@
                 
                 //Sends the message to the other user
                 $scope.send = function(msg){
-                    if(/\S/.test(msg)) //Checks message to make sure it contains alphanumeric characters
+                    //Checks message to make sure it contains alphanumeric characters
+                    if(/\S/.test(msg))
                     {
                         sendMessage(msg, selectedEmotionName);
                         $scope.inputMSG = '';
@@ -165,10 +170,10 @@
                 //Searched for other users in the userlist - search.html
                 $scope.searchOtherUsers = function(query){
                     query = query.toLowerCase();
-                    
                     filteredList = [];
                     
-                    if(/\S/.test(query)) //Checks query to make sure it contains alphanumeric characters
+                    //Checks query to make sure it contains alphanumeric characters
+                    if(/\S/.test(query)) 
                     {
                         //Adds filtered people to the list
                         for(i = 0; i < userlist.length; i++){
@@ -192,7 +197,7 @@
                         }
                         
                         
-                        
+                        //Clears the search list and populates it with users
                         $("#search_list").html("");
                         if(filteredList.length > 0)
                         {
@@ -212,10 +217,15 @@
                     }
                 }
                 
+                //Populates the main page with the user's friends
                 $scope.populateMain = function(){
                     console.log("Populate Main! -- AngularJS");
+                    
+                    //genTimeout prevents a bug where the main page won't be populated.
                     var genTimeout = $timeout(function() {
                         console.log("JSON LENGTH: " + Object.keys(channellist).length);
+                        
+                        //For loop to populate the page
                         if(Object.keys(channellist).length > 0){
                             $("#connected_user_list").html("");
                             for(i = 0; i < Object.keys(channellist).length; i++){
@@ -298,9 +308,11 @@
                 }
             });
             
+            //Same function as populateMain() except is called in the server.js file
             function populateMainJS(){
                 console.log("Populate Main! -- JavaScript");
                 console.log("JSON LENGTH: " + Object.keys(channellist).length);
+                //For loop to populate the page
                 if(Object.keys(channellist).length > 0){
                     $("#connected_user_list").html("");
                     for(i = 0; i < Object.keys(channellist).length; i++){
@@ -311,21 +323,26 @@
                 }
             }
             
+            //Function to open the chat with another user
             function openChat(user)
             {
                 chatLoaded = false;
                 currentConversation = user;
                 console.log("OPENING CHAT WITH: " + user);
                 tinglrNav.pushPage('conversation.html', {animation : 'lift'})
+                
+                //Once the page opens, run code to populate chat with history.
                 tinglrNav.on("postpush", function(){
                     $("#other_username").html(user);
                     
+                    //Selects PubNub channel with relevant username
                     for(i = 0; i < Object.keys(channellist).length; i++){
                         if(currentConversation === channellist[i].username){
                             currentChannel = channellist[i].channel;
                         }
                     }
                     
+                    //Populates chat history
                     pubnub.history({
                         channel: currentChannel,
                         callback: function(m){
@@ -350,12 +367,14 @@
                 });
             }
             
+            //Prompts the user to logout 
 	      	function logoutPrompt(){
 	      	    menu.closeMenu();
 	      	    ons.notification.confirm({
                     title: 'Logout',
                     message: 'Are you sure you want to logout?',
                     callback: function(result) {
+                        //If the user selects "Yes", log them out
                         if(result === 1)
                         {
                             logout();
@@ -364,11 +383,14 @@
                 });
 	        }
 	        
+	        //Logout function for the user
 	        function logout(){
 	            tinglrNav.resetToPage('landingscreen.html', {animation : 'fade'});
                 client_username = null;
                 loggedIn = false;
                 channellist = [];
+                
+                //Sends a logout message to the server
                 pubnub.publish({
                     channel: private_chan,
                     message: {
@@ -381,12 +403,16 @@
                 });
 	        }
 	        
+	        //Displays a message on the chat screen
 	        function displayMessage(sender, msg, emotion){
+	            
+	            //If statement ensures that the message is only between the two parties.
 	            if(sender === currentConversation || sender === client_username){
     	            //Escape the HTML
     	            msg = escapeHtml(msg);
     	            
-    	            messageString = null; //The message string to be appended
+    	            //The message string to be appended
+    	            messageString = null; 
     	            
     	            //Determine who sent the message
     	            sender === client_username ? messageString = "<div class='msgBoxRight" : messageString = "<div class='msgBoxLeft";
@@ -517,9 +543,8 @@
                 background-image: url("images/disgust.svg");
                 margin: 10px;
                 padding: 20px;
-                
-  overflow: hidden;
-  text-overflow: ellipsis;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 
             }
             
@@ -588,11 +613,6 @@
                 <ons-list-item modifier="chevron" ng-click="menu.setMainPage('main.html', {closeMenu: true});">
                     Conversations
                 </ons-list-item>
-                <!-- CUT UNTIL DELETE PROFILE/CHANGE PASSWORD IMPLEMENTED
-                <ons-list-item modifier="chevron" ng-click="menu.setMainPage('profile.html', {closeMenu: true})">
-                    Profile
-                </ons-list-item>
-                -->
                 <ons-list-item modifier="chevron" onclick="logoutPrompt()">
                     Logout
                 </ons-list-item>
@@ -600,7 +620,6 @@
         </ons-template>
 		
 		<!-- App Structure Code Start -->
-
         <ons-sliding-menu main-page="start.html" menu-page="menu.html" side="left" type="push" max-slide-distance="250px" var="menu" swipeable=false></ons-sliding-menu>
         
         <!-- Standard start code -->
@@ -608,12 +627,7 @@
             <ons-navigator title="Navigator" var="tinglrNav" page="splash.html"></ons-navigator>
         </ons-template>
         
-        <!-- TEST -->
-        <!--<ons-template id="start.html">-->
-        <!--    <ons-navigator title="Navigator" var="tinglrNav" page="landingscreen.html"></ons-navigator>-->
-        <!--</ons-template>-->
-        
-        <!-- Splash Screen for server init -->
+        <!-- Splash Screen for server connection -->
         <ons-template id="splash.html">
             <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center; margin-top:50%;">
@@ -623,14 +637,12 @@
             </ons-page>
         </ons-template>
         
+        <!-- Landing screen for when the app starts -->
         <ons-template id="landingscreen.html">
             <ons-page style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center;">
                     <div class="fitlogo">
                         <img src="images/Tinglr_logo.png"></img>
-                    </div>
-                    <div class="container">
-                    <!--<h1 id="fittext1">Tinglr Messenger</h1>-->
                     </div>
                     <h3 style="color:white;">Messenger App</h3>
                     <ons-bottom-toolbar style="height: 130px; background: transparent; border: none;">
@@ -644,6 +656,7 @@
             </ons-page>
         </ons-template>
         
+        <!-- Error page for when there is a connection error -->
         <ons-template id="connection_server_offline.html">
             <ons-page ng-controller="PageController" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center; margin-top:50%;">
@@ -654,6 +667,7 @@
             </ons-page>
         </ons-template>
         
+        <!-- Error page for when there is a connection error [DUPLICATE - MUST FIX] -->
         <ons-template id="connection_error.html">
             <ons-page ng-controller="PageController" style="background: url('images/mainscreenbg.png'); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center; margin-top:50%;">
@@ -664,6 +678,7 @@
             </ons-page>
         </ons-template>
         
+        <!-- Error for when the app encounters a critical error -->
         <ons-template id="fatal_error.html">
             <ons-page ng-controller="PageController" style="background: linear-gradient(150deg, rgb(52, 73, 94), rgb(49, 66, 102)); background-position:center; background-repeat:no-repeat; background-size:cover;">
                 <div style="text-align:center; margin-top:50%;">
@@ -674,6 +689,7 @@
             </ons-page>
         </ons-template>
         
+        <!-- Login screen -->
         <ons-template id="login.html">
             <ons-page ng-controller="PageController">
                 <ons-toolbar>
@@ -697,6 +713,7 @@
             </ons-page>
         </ons-template>
         
+        <!-- Register screen -->
         <ons-template id="register.html">
             <ons-page ng-controller="PageController">
                 <ons-toolbar>
@@ -712,16 +729,6 @@
                     <input ng-model="registerUsername" type="text" class="text-input text-input--underbar" style="width:80%; margin-top:4px;" placeholder="Username">
                     <input ng-model="registerPasswordOne" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Password">
                     <input ng_model="registerPasswordTwo" type="password" class="text-input text-input--underbar" style="width:80%; margin-top:4px;padding-top:4px;padding-bottom:0px;margin-top:25px;" placeholder="Confirm Password">
-                        <!--<div class="register-form">
-                            <input type="text" class="text-input--underbar" placeholder="First Name" value="">
-                            <input type="text" class="text-input--underbar" placeholder="Surname" value="">
-                            <input type="date" class="text-input--underbar" placeholder="Date of birth" value="">
-                            <input type="text" class="text-input--underbar" placeholder="User Name" value="">
-                            <input type="email" class="text-input--underbar" placeholder="Email" value="">
-                            <input type="password" class="text-input--underbar" placeholder="Password" value="">
-                            <input type="password" class="text-input--underbar" placeholder="Confirm Password" value="">
-                        </div>-->
-                        </ons-bottom-toolbar>
                     <ons-bottom-toolbar style="height: 65px; background: transparent; border: none;">
                         <div style="text-align: center" class="content-padded">
                             <ons-button class="button--large" ng-click="register(registerUsername,registerPasswordOne,registerPasswordTwo);">Register</ons-button>            
@@ -759,28 +766,8 @@
         <ons-template id="main.html">
             <ons-navigator title="Navigator" var="tinglrNav" page="main_start.html"></ons-navigator>
         </ons-template>
-        <!-- End of Main Page -->
         
-        <ons-template id="profile.html">
-            <ons-navigator title="Navigator" var="tinglrNav">
-                <ons-page>
-                	<ons-toolbar>
-    					<div class="left">
-    						<ons-toolbar-button ng-click="menu.toggleMenu()">
-    				          <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em;"></ons-icon>
-    				        </ons-toolbar-button>
-    					</div>
-    					<div class="center">Profile</div>
-    					<!--<div class="right"></div>-->
-    				</ons-toolbar>
-                    <div style="text-align:center;">
-                        <h3>Your Profile</h3>
-                    </div>
-                </ons-page>    
-            </ons-navigator>
-        </ons-template>
-        
-        <!--  Template to search for other user -->
+        <!--  User search page -->
         <ons-template id="search.html">
             <ons-page ng-controller="PageController">
             	<ons-toolbar>
@@ -850,12 +837,8 @@
                         </ons-icon>
                     </button>      
 			    </div>
-                
             </ons-page>
         </ons-template>
-		<!-- App Structure Code End -->
-		
-		<!-- Modals to display errors -->
 		
 		<!-- Connection Error Modal -->
 		<ons-modal var="connection_modal">

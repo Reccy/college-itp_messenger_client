@@ -17,7 +17,9 @@
         Tinglr Ltd.
     </author>
 
-    <platform name="android" />
+    <platform name="android" 
+        <icon src="icon.png" width="180" height="180" />
+    />
     <preference name="orientation" value="portrait" />
     <plugin name="cordova-plugin-whitelist" />
     <!-- <plugin name="com.pubnub.cordova.pubnub" spec="3.7.10" source="pgb" /> -->
