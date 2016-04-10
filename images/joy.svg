@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="320px" height="209px" viewBox="0 0 320 209" style="enable-background:new 0 0 320 209;" xml:space="preserve">
+<style type="text/css">
+<![CDATA[
+	.st0{fill:#B5D334;}
+	.st1{fill:#EEE809;}
+	.st2{fill:#FFF456;}
+]]>
+</style>
+<g id="back">
+	<path class="st2" d="M233.783,127.065c64.514,115.43-261.748,85.452-164.653,17.583c-109.02,19.516-49.404-213.024,53.694-78.83
+		c-105.61-124.46,220.771-33.591,85.792,16.516C359.153,30.294,314.014,265.427,233.783,127.065z">
+		<animate attributeName="fill" repeatCount="indefinite" dur="1000ms" to="#B5D334" />
+	</path>
+</g>
+<g id="middle">
+	<path class="st0" d="M246.37,161.372c71.484,24.702-304.396,51.223-196.602-15.1C-8.567,173.105-20.194-14.719,66.802,70.411
+		c-105.277-42.032,259.67-89.536,177.454-13.918C344.12,33.792,336.745,188.804,246.37,161.372z">
+		<animate attributeName="fill" repeatCount="indefinite" dur="1000ms" to="#FFF456" />
+	</path>
+</g>
+<g id="front">
+	<path class="st1" d="M266.547,164.285c39.643,21.123-264.285,21.123-224.643,0c-39.643,21.123-39.643-140.815,0-119.693
+		c-39.643-21.122,264.285-21.122,224.643,0C306.19,23.47,306.19,185.408,266.547,164.285z"/>
+</g>
+</svg>
+

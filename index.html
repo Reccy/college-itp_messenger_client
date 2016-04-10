@@ -477,7 +477,7 @@
 	            float:left;
 	            color:white;
 	            /*background-color:#3498db;*/
-	            padding:5px;
+	            padding:0px;
 	            max-width:60%;
 	            word-wrap:break-word;
 	        }
@@ -492,7 +492,7 @@
 	            float:right;
 	            color:white;
 	            /*background-color:#9b59b6;*/
-	            padding:5px;
+	            padding:0px;
 	            max-width:60%;
 	            word-wrap:break-word;
 	        }
@@ -503,52 +503,133 @@
 	        }
 	        
             .emotionJoy > p{
-	           background-color: #F1C40F;
-	        }
-	        
-	        .emotionSad > p{
-	            background-color: #2980B9;
-	        }
-	        
-	        .emotionAnger > p{
-	            text-align: center;
-	            background-color:none;
+                font-family: "Comic Sans MS", cursive, sans-serif;
+                font-weight: bold;
+                color: #06940F;
+                text-align: center;
+	            /*background-color: #F1C40F;*/
 	            max-width: 90%;
 	            float:left;
-	            padding: 20px;
+	            padding: 40px;
 	            margin: auto;
 	        }
 	        
-	        .emotionFear > p{
-	            background-color: #9B59B6;
-	        }
-	        
-	        .emotionDisgust  > p{
-	            text-align: center;
-	            background-color: none;
-	            max-width: 80%;
-	            float: left;
-	            padding: 20px;
-	            margin: auto;
-	            
-	        }
-            /* Custom Emotion CSS */
-            
-            .emotionDisgust{
+	        .emotionJoy{
                 max-width: 60%;
-                height: 20%;
+                height: 30%;
                 display: block;
                 background-position: center; 
                 background-repeat: no-repeat; 
                 background-size:  cover;
-                background-color: red;
-                background-image: url("images/disgust.svg");
+                background-color: none;
+                background-image: url("images/joy.svg");
                 margin: 10px;
-                padding: 20px;
+                padding: 10px;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                
             }
+	        
+	        .emotionSad > p{
+	            font-family: "Lucida Console", Monaco, monospace;
+	            text-align: center;
+	            /*background-color: #2980B9;*/
+	            max-width: 90%;
+	            float:left;
+	            padding: 40px;
+	            margin: auto;
+	        }
+	        
+	        .emotionSad{
+                max-width: 60%;
+                height: 30%;
+                display: block;
+                background-position: center; 
+                background-repeat: no-repeat; 
+                background-size:  cover;
+                background-color: none;
+                background-image: url("images/sad.svg");
+                margin: 10px;
+                padding: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+	        
+	        .emotionAnger > p{
+	            font-family: "Arial Black", Gadget, sans-serif;
+	            text-align: center;
+	            background-color:none;
+	            max-width: 80%;
+	            float:left;
+	            padding: 40px;
+	            margin: auto;
+	        }
+	        
+	        .emotionAnger{
+                max-width: 60%;
+                height: 30%;
+                display: block;
+                background-position: center; 
+                background-repeat: no-repeat; 
+                background-size:  cover;
+                background-color: none;
+                background-image: url("images/anger.svg");
+                margin: 10px;
+                padding: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+	        
+	        .emotionFear > p{
+	            font-family: "Arial", Helvetica, sans-serif;
+	            text-align: center;
+	            background-color: none;
+	            max-width: 80%;
+	            float: left;
+	            padding: 40px;
+	            margin: auto;
+	        }
+	        
+	        .emotionFear{
+                max-width: 60%;
+                height: 30%;
+                display: block;
+                background-position: center; 
+                background-repeat: no-repeat; 
+                background-size:  cover;
+                background-color: none;
+                background-image: url("images/fear.svg");
+                margin: 10px;
+                padding: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+	        
+	        .emotionDisgust > p{
+	            font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+	            text-align: center;
+	            background-color: none;
+	            max-width: 80%;
+	            float: left;
+	            padding: 40px;
+	            margin: auto;
+	        }
+            
+            .emotionDisgust{
+                max-width: 60%;
+                height: 30%;
+                display: block;
+                background-position: center; 
+                background-repeat: no-repeat; 
+                background-size:  cover;
+                background-color: none;
+                background-image: url("images/disgust.svg");
+                margin: 10px;
+                padding: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            /* Custom Emotion CSS 
             
             .emotionAnger{
                 max-width: 60%;
@@ -575,7 +656,7 @@
                 -webkit-clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
                  clip-path:  polygon(96% 8%, 93% 0, 82% 9%, 70% 2%, 57% 7%, 45% 6%, 33% 0, 26% 9%, 16% 0, 13% 11%, 1% 11%, 9% 24%, 1% 32%, 10% 46%, 0 53%, 11% 64%, 0 73%, 9% 84%, 6% 98%, 24% 91%, 37% 98%, 49% 93%, 60% 98%, 68% 91%, 83% 99%, 90% 89%, 100% 86%, 96% 67%, 100% 53%, 94% 37%, 100% 20%);
                   }
-            }
+            }*/
 	    
 	        /*
 	        @keyframes pulse {
