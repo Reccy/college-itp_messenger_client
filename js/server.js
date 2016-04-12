@@ -176,7 +176,7 @@ function initialize_app() {
                                 console.log("Login Successful!");
                                 loggedIn = true;
                                 client_username = m.username;
-                                historyChannel = m.username + "_hChan";
+                                historyChannel = m.username + "_hisChan";
                                 
                                 //Connects the user to their friends
                                 pubnub.history({
